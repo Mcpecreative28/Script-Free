@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScriptStation - Koleksi Script Bot & Tools</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        appBg: '#0b1120',
+                        cardBg: 'rgba(30, 41, 59, 0.6)',
+                        textMuted: '#94a3b8'
+                    },
+                    animation: {
+                        blob: "blob 7s infinite",
+                    },
+                    keyframes: {
+                        blob: {
+                            "0%": { transform: "translate(0px, 0px) scale(1)" },
+                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                            "100%": { transform: "translate(0px, 0px) scale(1)" }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #0b1120; 
+            color: #f8fafc; 
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+
+        .modal-enter { opacity: 0; transform: scale(0.95) translateY(10px); }
+        .modal-enter-active { opacity: 1; transform: scale(1) translateY(0); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        
+        .toast-enter { transform: translateY(100%); opacity: 0; }
+        .toast-enter-active { transform: translateY(0); opacity: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .toast-leave { transform: translateY(100%); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .star-rating input { display: none; }
+        .star-rating label { color: #475569; font-size: 28px; cursor: pointer; transition: color 0.2s; }
+        .star-rating input:checked ~ label { color: #fbbf24; }
+        .star-rating label:hover, .star-rating label:hover ~ label { color: #fcd34d; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative">
+
+    <!-- Animasi Background Berjalan (Bikin web terlihat hidup) -->
+    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-emerald-500/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
+        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-teal-500/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-cyan-500/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- Navbar -->
+    <header class="border-b border-white/10 bg-appBg/60 backdrop-blur-xl sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="window.location.reload()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-code text-lg"></i>
+                </div>
+                <h1 class="text-2xl font-extrabold tracking-tight">SCRIPT<span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">STATION</span></h1>
+            </div>
+            
+            <button onclick="openModal('addScriptModal')" class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5 flex items-center gap-2 text-sm md:text-base">
+                <i class="fa-solid fa-plus"></i> Tambah Script
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Search & Filter Bar -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="glass-card rounded-3xl p-5 shadow-2xl flex flex-col lg:flex-row gap-4 items-center justify-between">
+                
+                <!-- Pencarian Nama -->
+                <div class="relative w-full lg:w-1/3">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" id="searchInput" oninput="applyFilters()" class="w-full bg-slate-900/60 border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-sm" placeholder="Cari nama script atau author...">
+                </div>
+
+                <div class="flex flex-col md:flex-row w-full lg:w-auto gap-4">
+                    <!-- Filter Kategori -->
+                    <select id="categorySelect" onchange="applyFilters()" class="w-full md:w-auto bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 text-sm appearance-none cursor-pointer">
+                        <option value="all">Semua Kategori</option>
+                        <option value="Bot WhatsApp">Bot WhatsApp</option>
+                        <option value="Bot Telegram">Bot Telegram</option>
+                        <option value="Bot Discord">Bot Discord</option>
+                        <option value="Function">Function</option>
+                        <option value="Base">Base</option>
+                        <option value="Script Auto Order">Script Auto Order</option>
+                        <option value="Monitoring">Monitoring</option>
+                    </select>
+
+                    <!-- Filter Bahasa (Akurat) -->
+                    <select id="languageSelect" onchange="applyFilters()" class="w-full md:w-auto bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 text-sm appearance-none cursor-pointer">
+                        <option value="all">Semua Bahasa</option>
+                        <option value="Node.js">Node.js</option>
+                        <option value="Python">Python</option>
+                        <option value="PHP">PHP</option>
+                        <option value="JavaScript">JavaScript</option>
+                        <option value="TypeScript">TypeScript</option>
+                        <option value="Go">Go</option>
+                        <option value="Java">Java</option>
+                        <option value="C++">C++</option>
+                        <option value="C#">C#</option>
+                        <option value="Ruby">Ruby</option>
+                        <option value="Rust">Rust</option>
+                        <option value="Shell">Shell</option>
+                        <option value="HTML/CSS">HTML/CSS</option>
+                        <option value="Dart">Dart</option>
+                        <option value="Kotlin">Kotlin</option>
+                        <option value="Swift">Swift</option>
+                        <option value="SQL">SQL</option>
+                        <option value="Lua">Lua</option>
+                    </select>
+
+                    <!-- Urutkan -->
+                    <select id="sortSelect" onchange="applyFilters()" class="w-full md:w-auto bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 text-sm appearance-none cursor-pointer">
+                        <option value="newest">Terbaru</option>
+                        <option value="highest_rating">Rating Tertinggi</option>
+                        <option value="az">Abjad (A-Z)</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scripts Grid -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+            <div id="scriptsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="col-span-full text-center py-20 text-gray-400" id="loadingState">
+                    <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-4 text-emerald-500"></i>
+                    <p class="animate-pulse font-medium">Memuat koleksi script terbaik...</p>
+                </div>
+            </div>
+            
+            <div id="emptyState" class="hidden text-center py-24 text-gray-400">
+                <div class="w-24 h-24 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/10 shadow-lg">
+                    <i class="fa-solid fa-ghost text-4xl text-slate-500 hover:animate-bounce"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Yah, Kosong!</h3>
+                <p class="text-sm">Belum ada script yang cocok dengan pencarianmu.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL: TAMBAH SCRIPT -->
+    <div id="addScriptModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md" onclick="closeModal('addScriptModal')"></div>
+        <div class="relative glass-card border border-white/10 w-full max-w-2xl max-h-full overflow-y-auto rounded-3xl shadow-2xl p-6 md:p-10 transform scale-95 opacity-0 transition-all duration-300" id="addScriptModalContent">
+            
+            <div class="flex justify-between items-start mb-8 border-b border-white/10 pb-6">
+                <div>
+                    <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-2">Tambah Script Baru</h3>
+                    <p class="text-sm text-emerald-400">Berkontribusi dan bantu komunitas berkembang!</p>
+                </div>
+                <button onclick="closeModal('addScriptModal')" class="w-10 h-10 rounded-full bg-slate-800/80 hover:bg-rose-500/20 text-gray-400 hover:text-rose-500 flex items-center justify-center transition-colors shadow-inner border border-white/5">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="addScriptForm" class="space-y-8">
+                
+                <!-- Multi Image Upload (Preview/Showcase Script) -->
+                <div class="bg-slate-900/40 p-5 rounded-2xl border border-white/5">
+                    <label class="block text-sm font-semibold text-white mb-2"><i class="fa-solid fa-images text-emerald-400 mr-2"></i>Foto Preview Script (Maks 3 Foto)</label>
+                    <p class="text-xs text-gray-400 mb-4">Tunjukkan seperti apa tampilan atau hasil dari script ini.</p>
+                    
+                    <input type="file" id="scriptImages" accept="image/*" multiple max="3" class="block w-full text-sm text-slate-400 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20 cursor-pointer transition-colors" onchange="previewScriptImagesNew(event)">
+                    <div id="scriptImagesPreview" class="flex gap-3 mt-4 flex-wrap"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Nama Bot / Script</label>
+                        <input type="text" id="scriptName" required class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-sm">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Nama Pembuat (Author)</label>
+                        <input type="text" id="scriptAuthor" required class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Kategori Script</label>
+                        <select id="scriptType" class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 text-sm">
+                            <option value="Bot WhatsApp">Bot WhatsApp</option>
+                            <option value="Bot Telegram">Bot Telegram</option>
+                            <option value="Bot Discord">Bot Discord</option>
+                            <option value="Function">Function</option>
+                            <option value="Base">Base</option>
+                            <option value="Script Auto Order">Script Auto Order</option>
+                            <option value="Monitoring">Monitoring</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Bahasa Pemrograman</label>
+                        <select id="scriptLang" class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 text-sm">
+                            <option value="Node.js">Node.js</option>
+                            <option value="Python">Python</option>
+                            <option value="PHP">PHP</option>
+                            <option value="JavaScript">JavaScript</option>
+                            <option value="TypeScript">TypeScript</option>
+                            <option value="Go">Go</option>
+                            <option value="Java">Java</option>
+                            <option value="C++">C++</option>
+                            <option value="C#">C#</option>
+                            <option value="Ruby">Ruby</option>
+                            <option value="Rust">Rust</option>
+                            <option value="Shell">Shell</option>
+                            <option value="HTML/CSS">HTML/CSS</option>
+                            <option value="Dart">Dart</option>
+                            <option value="Kotlin">Kotlin</option>
+                            <option value="Swift">Swift</option>
+                            <option value="SQL">SQL</option>
+                            <option value="Lua">Lua</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Deskripsi Singkat & Fitur</label>
+                    <textarea id="scriptDesc" required rows="4" class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 resize-none text-sm placeholder-slate-600" placeholder="Contoh: Fitur anti-link, downloader tiktok, auto-respon, dll..."></textarea>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Link Unduhan / Repositori</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500"><i class="fa-solid fa-link"></i></div>
+                        <input type="url" id="scriptLink" required class="w-full bg-slate-900/60 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-sm" placeholder="https://github.com/... atau link G-Drive">
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-white font-bold py-4 rounded-xl mt-4 transition-all transform hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/25 flex justify-center items-center gap-2 text-lg border border-white/10">
+                    <i class="fa-solid fa-paper-plane"></i> Publikasikan ke Komunitas
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: REVIEW SYSTEM -->
+    <div id="reviewModal" class="fixed inset-0 z-[60] hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeModal('reviewModal')"></div>
+        <div class="relative glass-card border border-white/10 w-full max-w-xl max-h-full overflow-y-auto rounded-3xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300" id="reviewModalContent">
+            
+            <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                <h3 class="text-xl font-extrabold text-white">Ulasan & Rating</h3>
+                <button onclick="closeModal('reviewModal')" class="text-gray-400 hover:text-white transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <!-- List Reviews -->
+            <div id="reviewsList" class="space-y-4 mb-6 max-h-72 overflow-y-auto pr-2 custom-scroll">
+                <div class="text-center text-sm text-gray-500 py-4" id="emptyReviews">Belum ada ulasan. Jadilah yang pertama!</div>
+            </div>
+
+            <!-- Form Add Review -->
+            <form id="addReviewForm" class="bg-slate-900/60 p-5 rounded-2xl border border-white/10 space-y-4">
+                <h4 class="text-sm font-bold text-emerald-400 uppercase tracking-wider">Tulis Ulasan Anda</h4>
+                
+                <!-- Star Rating -->
+                <div class="flex flex-row-reverse justify-end star-rating gap-2">
+                    <input type="radio" id="star5" name="rating" value="5" required /><label for="star5" title="5 Bintang"><i class="fa-solid fa-star"></i></label>
+                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 Bintang"><i class="fa-solid fa-star"></i></label>
+                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 Bintang"><i class="fa-solid fa-star"></i></label>
+                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 Bintang"><i class="fa-solid fa-star"></i></label>
+                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 Bintang"><i class="fa-solid fa-star"></i></label>
+                </div>
+
+                <input type="text" id="reviewerName" required class="w-full bg-slate-900/80 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:outline-none text-sm" placeholder="Nama Anda">
+                <textarea id="reviewText" required rows="3" class="w-full bg-slate-900/80 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:outline-none resize-none text-sm" placeholder="Bagaimana pengalaman Anda memakai script ini?"></textarea>
+                
+                <!-- Multi Image Upload for Reviews -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-2">Upload Bukti Foto (Ops. Maks 3)</label>
+                    <input type="file" id="reviewImages" accept="image/*" multiple class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20 cursor-pointer" onchange="previewReviewImages(event)" max="3">
+                    <div id="reviewImagesPreview" class="flex gap-2 mt-3 flex-wrap"></div>
+                </div>
+
+                <input type="hidden" id="currentScriptIdForReview">
+                
+                <button type="submit" id="submitReviewBtn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl text-sm transition-colors flex justify-center items-center gap-2 border border-emerald-400/50">
+                    Kirim Ulasan Bintang
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <script>
+        let allScripts = [];
+        let newScriptFiles = []; // File foto showcase script baru
+        let reviewFiles = [];    // File foto ulasan
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(modalId + 'Content');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(modalId + 'Content');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-500 border-emerald-400' : 'bg-rose-500 border-rose-400';
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-circle-exclamation';
+
+            toast.className = `flex items-center gap-3 px-5 py-4 rounded-xl shadow-2xl shadow-black/50 font-semibold text-sm text-white ${bgColor} border toast-enter pointer-events-auto backdrop-blur-md`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-xl"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-enter-active');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('toast-leave');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Preview Foto Tambah Script Baru
+        function previewScriptImagesNew(event) {
+            const container = document.getElementById('scriptImagesPreview');
+            container.innerHTML = '';
+            newScriptFiles = Array.from(event.target.files).slice(0, 3);
+            
+            newScriptFiles.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = "w-20 h-20 object-cover rounded-xl border-2 border-emerald-500/30 shadow-lg";
+                    container.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Preview Foto Ulasan
+        function previewReviewImages(event) {
+            const container = document.getElementById('reviewImagesPreview');
+            container.innerHTML = '';
+            reviewFiles = Array.from(event.target.files).slice(0, 3);
+            
+            reviewFiles.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = "w-14 h-14 object-cover rounded-lg border border-white/20";
+                    container.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
+
+    <!-- FIREBASE INTEGRATION -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2hmPdgq14RYlJ37F6TzbdrEqpoP77otQ",
+            authDomain: "database-for-scripts-496e5.firebaseapp.com",
+            databaseURL: "https://database-for-scripts-496e5-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "database-for-scripts-496e5",
+            storageBucket: "database-for-scripts-496e5.firebasestorage.app",
+            messagingSenderId: "373315419246",
+            appId: "1:373315419246:web:16a61db23349fb89947a7f"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // ---- TAMBAH SCRIPT UTAMA ----
+        const addScriptForm = document.getElementById('addScriptForm');
+        addScriptForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sedang Memproses...';
+            submitBtn.disabled = true;
+
+            try {
+                const name = document.getElementById('scriptName').value;
+                let imageUrls = [];
+
+                if (newScriptFiles.length > 0) {
+                    const uploadPromises = newScriptFiles.map(async (file) => {
+                        const ref = storage.ref().child(`showcase/${Date.now()}_${file.name}`);
+                        await ref.put(file);
+                        return await ref.getDownloadURL();
+                    });
+                    imageUrls = await Promise.all(uploadPromises);
+                }
+
+                await db.collection("scripts").add({
+                    title: name,
+                    author: document.getElementById('scriptAuthor').value,
+                    description: document.getElementById('scriptDesc').value,
+                    language: document.getElementById('scriptLang').value,
+                    type: document.getElementById('scriptType').value,
+                    downloadLink: document.getElementById('scriptLink').value,
+                    images: imageUrls, 
+                    ratingSum: 0,   // Untuk kalkulasi rating
+                    reviewCount: 0, // Untuk kalkulasi rating
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                });
+
+                showToast("Berhasil! Script-mu sudah tayang.", "success");
+                addScriptForm.reset();
+                document.getElementById('scriptImagesPreview').innerHTML = '';
+                newScriptFiles = [];
+                closeModal('addScriptModal');
+                loadScripts();
+            } catch (error) {
+                showToast("Gagal menyimpan data.", "error");
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // ---- LOAD SCRIPTS ----
+        async function loadScripts() {
+            try {
+                const querySnapshot = await db.collection("scripts").orderBy("createdAt", "desc").get();
+                allScripts = [];
+                querySnapshot.forEach((doc) => {
+                    allScripts.push({ id: doc.id, ...doc.data() });
+                });
+                document.getElementById('loadingState').classList.add('hidden');
+                applyFilters();
+            } catch (error) {
+                document.getElementById('loadingState').innerHTML = `<p class="text-rose-400">Gagal terhubung ke database.</p>`;
+            }
+        }
+
+        // ---- RENDER HTML KARTU SCRIPT ----
+        function renderScripts(scriptsToRender) {
+            const container = document.getElementById('scriptsContainer');
+            const emptyState = document.getElementById('emptyState');
+            container.innerHTML = '';
+
+            if (scriptsToRender.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                scriptsToRender.forEach((data) => {
+                    
+                    // Gunakan foto pertama sebagai cover, jika tidak ada pakai placeholder
+                    const imgSrc = (data.images && data.images.length > 0) ? data.images[0] : 'https://placehold.co/600x300/1e293b/10b981?text=Karya+Keren';
+
+                    // Kalkulasi Rating Google Play Style
+                    const avgRating = data.reviewCount > 0 ? (data.ratingSum / data.reviewCount).toFixed(1) : '0.0';
+
+                    const card = document.createElement('div');
+                    card.className = "glass-card rounded-3xl overflow-hidden hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/15 transition-all duration-300 flex flex-col h-full group relative"; 
+                    
+                    card.innerHTML = `
+                        <!-- Cover Image -->
+                        <div class="relative w-full h-48 overflow-hidden bg-slate-800">
+                            <div class="absolute inset-0 bg-gradient-to-t from-appBg to-transparent z-10"></div>
+                            <img src="${imgSrc}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Cover">
+                            
+                            <!-- Badges -->
+                            <div class="absolute top-4 left-4 z-20 flex gap-2">
+                                <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold tracking-wide shadow-lg">${data.language}</span>
+                                <span class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold tracking-wide shadow-lg">${data.type}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="p-6 flex flex-col flex-grow relative z-20 -mt-12">
+                            
+                            <!-- Rating Indicator -->
+                            <div class="flex items-center gap-1.5 bg-slate-900/90 w-fit px-3 py-1.5 rounded-xl border border-white/10 mb-4 shadow-lg backdrop-blur-md">
+                                <i class="fa-solid fa-star text-yellow-400 text-sm"></i>
+                                <span class="text-white font-bold text-sm">${avgRating}</span>
+                                <span class="text-gray-400 text-xs ml-1">(${data.reviewCount || 0} Ulasan)</span>
+                            </div>
+
+                            <h3 class="text-xl md:text-2xl font-extrabold text-white mb-1 line-clamp-1 group-hover:text-emerald-400 transition-colors">${data.title}</h3>
+                            <p class="text-xs font-medium text-emerald-500 mb-4"><i class="fa-solid fa-code-branch mr-1"></i> Author: <span class="text-gray-300">${data.author}</span></p>
+                            
+                            <p class="text-sm text-textMuted mb-6 line-clamp-3 flex-grow leading-relaxed">${data.description}</p>
+                            
+                            <!-- Buttons -->
+                            <div class="grid grid-cols-2 gap-3 mt-auto">
+                                <a href="${data.downloadLink}" target="_blank" class="flex justify-center items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-appBg font-bold py-3 rounded-xl transition-all text-sm shadow-lg shadow-emerald-500/20">
+                                    <i class="fa-solid fa-download"></i> Unduh
+                                </a>
+                                <button onclick="openReviewModal('${data.id}')" class="flex justify-center items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition-all text-sm border border-white/10 shadow-lg">
+                                    <i class="fa-regular fa-star"></i> Ulas
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        // FUNGSI FILTER BERLAPIS
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categorySelect').value;
+            const language = document.getElementById('languageSelect').value;
+            const sortBy = document.getElementById('sortSelect').value;
+
+            let filtered = allScripts.filter(script => {
+                const matchName = (script.title && script.title.toLowerCase().includes(searchTerm)) || 
+                                  (script.author && script.author.toLowerCase().includes(searchTerm));
+                return matchName;
+            });
+
+            if (category !== 'all') filtered = filtered.filter(script => script.type === category);
+            if (language !== 'all') filtered = filtered.filter(script => script.language === language);
+
+            if (sortBy === 'newest') {
+                filtered.sort((a, b) => b.createdAt - a.createdAt);
+            } else if (sortBy === 'az') {
+                filtered.sort((a, b) => a.title.localeCompare(b.title));
+            } else if (sortBy === 'highest_rating') {
+                filtered.sort((a, b) => {
+                    const ratingA = a.reviewCount > 0 ? (a.ratingSum / a.reviewCount) : 0;
+                    const ratingB = b.reviewCount > 0 ? (b.ratingSum / b.reviewCount) : 0;
+                    return ratingB - ratingA;
+                });
+            }
+
+            renderScripts(filtered);
+        }
+
+        // ---- SISTEM REVIEW ----
+        async function openReviewModal(scriptId) {
+            document.getElementById('currentScriptIdForReview').value = scriptId;
+            openModal('reviewModal');
+            
+            const listContainer = document.getElementById('reviewsList');
+            listContainer.innerHTML = '<div class="flex flex-col items-center justify-center py-10"><i class="fa-solid fa-circle-notch fa-spin text-emerald-500 text-3xl mb-3"></i><p class="text-sm text-gray-400">Memuat Ulasan...</p></div>';
+            
+            try {
+                const snapshot = await db.collection('scripts').doc(scriptId).collection('reviews').orderBy('createdAt', 'desc').get();
+                listContainer.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    listContainer.innerHTML = '<div class="text-center text-sm text-gray-500 py-6 border border-white/5 rounded-xl border-dashed">Jadilah orang pertama yang memberikan ulasan!</div>';
+                } else {
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        let starsHtml = '';
+                        for(let i=0; i<5; i++) {
+                            starsHtml += `<i class="fa-solid fa-star ${i < data.rating ? 'text-yellow-400' : 'text-slate-700'} text-sm"></i>`;
+                        }
+                        
+                        let imagesHtml = '';
+                        if(data.images && data.images.length > 0) {
+                            imagesHtml = '<div class="flex gap-2 mt-3">';
+                            data.images.forEach(img => {
+                                imagesHtml += `<a href="${img}" target="_blank"><img src="${img}" class="w-16 h-16 rounded-xl object-cover border border-white/10 hover:scale-105 transition-transform shadow-lg"></a>`;
+                            });
+                            imagesHtml += '</div>';
+                        }
+
+                        listContainer.innerHTML += `
+                            <div class="bg-slate-800/40 p-4 rounded-2xl border border-white/5 mb-3">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-white text-sm">${data.name}</span>
+                                    <div class="flex gap-1">${starsHtml}</div>
+                                </div>
+                                <p class="text-sm text-gray-400 leading-relaxed">${data.text}</p>
+                                ${imagesHtml}
+                            </div>
+                        `;
+                    });
+                }
+            } catch (error) {
+                listContainer.innerHTML = '<div class="text-center text-sm text-rose-500 py-4">Gagal memuat ulasan.</div>';
+            }
+        }
+
+        const addReviewForm = document.getElementById('addReviewForm');
+        addReviewForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitReviewBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Mengirim...';
+            btn.disabled = true;
+
+            try {
+                const scriptId = document.getElementById('currentScriptIdForReview').value;
+                const rating = parseInt(document.querySelector('input[name="rating"]:checked').value);
+                const name = document.getElementById('reviewerName').value;
+                const text = document.getElementById('reviewText').value;
+                
+                let imageUrls = [];
+                if (reviewFiles.length > 0) {
+                    const uploadPromises = reviewFiles.map(async (file) => {
+                        const ref = storage.ref().child(`reviews/${scriptId}/${Date.now()}_${file.name}`);
+                        await ref.put(file);
+                        return await ref.getDownloadURL();
+                    });
+                    imageUrls = await Promise.all(uploadPromises);
+                }
+
+                // 1. Simpan Ulasan ke Sub-collection
+                await db.collection('scripts').doc(scriptId).collection('reviews').add({
+                    name: name,
+                    rating: rating,
+                    text: text,
+                    images: imageUrls,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // 2. Kalkulasi Akumulasi Rating (Gaya Google Play) pada dokumen utama script
+                await db.collection('scripts').doc(scriptId).update({
+                    reviewCount: firebase.firestore.FieldValue.increment(1),
+                    ratingSum: firebase.firestore.FieldValue.increment(rating)
+                });
+
+                showToast("Terima kasih atas ulasanmu!", "success");
+                addReviewForm.reset();
+                document.getElementById('reviewImagesPreview').innerHTML = '';
+                reviewFiles = [];
+                
+                // Refresh data background agar rating baru tampil di kartu utama
+                loadScripts(); 
+                
+                // Reload list ulasan dalam modal
+                openReviewModal(scriptId); 
+            } catch (error) {
+                showToast("Gagal mengirim ulasan.", "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        window.onload = () => {
+            loadScripts();
+        };
+    </script>
+</body>
+</html>
