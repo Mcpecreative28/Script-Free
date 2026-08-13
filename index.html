@@ -3,33 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScriptStation - Koleksi Script Bot & Tools</title>
+    <title>ScriptStation by Kyno - Koleksi Script & Tools</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
     
+    <!-- Highlight.js (Untuk Warna Kode Snippet) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    fontFamily: { 
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    },
                     colors: {
-                        appBg: '#0b1120',
-                        cardBg: 'rgba(30, 41, 59, 0.6)',
+                        appBg: '#0f172a', 
+                        cardBg: '#1e293b',
                         textMuted: '#94a3b8'
                     },
-                    animation: {
-                        blob: "blob 7s infinite",
-                    },
+                    animation: { blob: "blob 10s infinite" },
                     keyframes: {
                         blob: {
                             "0%": { transform: "translate(0px, 0px) scale(1)" },
-                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
-                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                            "33%": { transform: "translate(20px, -30px) scale(1.05)" },
+                            "66%": { transform: "translate(-15px, 15px) scale(0.95)" },
                             "100%": { transform: "translate(0px, 0px) scale(1)" }
                         }
                     }
@@ -38,28 +43,18 @@
         }
     </script>
     <style>
-        body { 
-            background-color: #0b1120; 
-            color: #f8fafc; 
-            overflow-x: hidden;
-        }
-        ::-webkit-scrollbar { width: 6px; }
+        body { background-color: #0f172a; color: #f8fafc; overflow-x: hidden; scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
         
-        .glass-card {
-            background: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        
+        .glass-card { background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .hardware-accelerated { transform: translateZ(0); will-change: transform; backface-visibility: hidden; }
         .animation-delay-2000 { animation-delay: 2s; }
-        .animation-delay-4000 { animation-delay: 4s; }
 
         .modal-enter { opacity: 0; transform: scale(0.95) translateY(10px); }
-        .modal-enter-active { opacity: 1; transform: scale(1) translateY(0); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-enter-active { opacity: 1; transform: scale(1) translateY(0); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         
         .toast-enter { transform: translateY(100%); opacity: 0; }
         .toast-enter-active { transform: translateY(0); opacity: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -69,248 +64,426 @@
         .star-rating label { color: #475569; font-size: 28px; cursor: pointer; transition: color 0.2s; }
         .star-rating input:checked ~ label { color: #fbbf24; }
         .star-rating label:hover, .star-rating label:hover ~ label { color: #fcd34d; }
+
+        .tab-active { border-bottom: 2px solid #10b981; color: #10b981; font-weight: 700; }
+        .tab-inactive { color: #94a3b8; font-weight: 500; border-bottom: 2px solid transparent; hover:text-white; }
+        
+        .terminal-output { background-color: #000; color: #00ff00; font-family: 'Fira Code', monospace; padding: 10px; border-radius: 8px; height: 150px; overflow-y: auto; font-size: 12px; }
+
+        /* Fitur Admin Delete - Disembunyikan secara default */
+        body:not(.admin-mode) .admin-only-btn { display: none !important; }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col relative">
 
-    <!-- Animasi Background Berjalan -->
-    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-emerald-500/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
-        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-teal-500/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
-        <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-cyan-500/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-4000"></div>
+    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none hardware-accelerated">
+        <div class="absolute top-[-10%] left-[-10%] w-80 h-80 bg-emerald-500/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob hardware-accelerated"></div>
+        <div class="absolute top-[20%] right-[-10%] w-80 h-80 bg-teal-500/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000 hardware-accelerated"></div>
     </div>
 
-    <!-- Navbar -->
-    <header class="border-b border-white/10 bg-appBg/60 backdrop-blur-xl sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-3 cursor-pointer group" onclick="window.location.reload()">
+    <header class="border-b border-white/5 bg-appBg/90 backdrop-blur-xl sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="switchTab('scripts')">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
                     <i class="fa-solid fa-code text-lg"></i>
                 </div>
-                <h1 class="text-2xl font-extrabold tracking-tight">SCRIPT<span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">STATION</span></h1>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-extrabold tracking-tight leading-none text-white">SCRIPT<span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">STATION</span></h1>
+                    <p class="text-[10px] text-emerald-500 font-semibold tracking-widest uppercase">By Kyno</p>
+                </div>
             </div>
             
-            <button onclick="openModal('addScriptModal')" class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5 flex items-center gap-2 text-sm md:text-base">
-                <i class="fa-solid fa-plus"></i> Tambah Script
-            </button>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex flex-col items-end text-xs font-mono mr-2 border-r border-white/10 pr-4">
+                    <span id="realtimeClock" class="text-gray-300">00:00:00</span>
+                    <span class="text-emerald-400 flex items-center gap-1.5 mt-0.5">
+                        <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
+                        <span id="onlineCounter">124</span> Online
+                    </span>
+                </div>
+
+                <div id="adminArea" class="hidden mr-2">
+                    <button onclick="openModal('adminModal')" class="bg-amber-500/20 text-amber-400 border border-amber-500/50 hover:bg-amber-500 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition-colors">
+                        <i class="fa-solid fa-crown mr-1"></i> Admin Panel
+                    </button>
+                </div>
+
+                <button id="mainActionBtn" onclick="openModal('addScriptModal')" class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white px-4 md:px-5 py-2 md:py-2.5 rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5 flex items-center gap-2 text-sm md:text-base">
+                    <i class="fa-solid fa-plus"></i> <span id="btnText">Upload Script</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-1 overflow-x-auto whitespace-nowrap hide-scrollbar">
+            <div class="flex space-x-6">
+                <button onclick="switchTab('scripts')" id="tab-scripts" class="tab-active pb-3 text-sm transition-colors"><i class="fa-solid fa-folder-tree mr-1.5"></i>Scripts</button>
+                <button onclick="switchTab('snippets')" id="tab-snippets" class="tab-inactive pb-3 text-sm transition-colors"><i class="fa-solid fa-laptop-code mr-1.5"></i>Snippets</button>
+                <button onclick="switchTab('store')" id="tab-store" class="tab-inactive pb-3 text-sm transition-colors"><i class="fa-solid fa-shop mr-1.5"></i>Toko Panel</button>
+                <button onclick="switchTab('claim')" id="tab-claim" class="tab-inactive pb-3 text-sm transition-colors"><i class="fa-solid fa-shield-check mr-1.5"></i>Klaim Garansi</button>
+            </div>
         </div>
     </header>
 
     <main class="flex-grow">
-        <!-- Search & Filter Bar -->
-        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div class="glass-card rounded-3xl p-5 shadow-2xl flex flex-col lg:flex-row gap-4 items-center justify-between">
-                
-                <!-- Pencarian Nama -->
-                <div class="relative w-full lg:w-1/3">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <i class="fa-solid fa-search text-gray-400"></i>
+        
+        <!-- =================== SECTION: SCRIPTS =================== -->
+        <div id="section-scripts" class="block">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="glass-card rounded-2xl p-5 shadow-xl flex flex-col gap-4">
+                    <!-- Baris 1: Pencarian -->
+                    <div class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="fa-solid fa-search text-gray-400"></i></div>
+                        <input type="text" id="searchInput" oninput="applyFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm" placeholder="Cari nama script atau author...">
                     </div>
-                    <input type="text" id="searchInput" oninput="applyFilters()" class="w-full bg-slate-900/60 border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-sm" placeholder="Cari nama script atau author...">
+                    
+                    <!-- Baris 2: Filter & Urutkan -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <select id="categorySelect" onchange="applyFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm">
+                            <option value="all">Semua Kategori</option>
+                            <option value="Bot WhatsApp">Bot WhatsApp</option><option value="Bot Telegram">Bot Telegram</option><option value="Bot Discord">Bot Discord</option><option value="Function">Function</option><option value="Base">Base</option><option value="Script Auto Order">Script Auto Order</option><option value="Monitoring">Monitoring</option>
+                        </select>
+                        <select id="languageSelect" onchange="applyFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm">
+                            <option value="all">Semua Bahasa</option>
+                            <option value="Node.js">Node.js</option><option value="Python">Python</option><option value="PHP">PHP</option><option value="JavaScript">JavaScript</option><option value="TypeScript">TypeScript</option><option value="Go">Go</option><option value="Java">Java</option><option value="C++">C++</option><option value="C#">C#</option><option value="Ruby">Ruby</option><option value="Rust">Rust</option><option value="Shell">Shell</option><option value="HTML/CSS">HTML/CSS</option><option value="Dart">Dart</option><option value="Kotlin">Kotlin</option><option value="Swift">Swift</option><option value="SQL">SQL</option><option value="Lua">Lua</option>
+                        </select>
+                        <!-- Urutan Lengkap -->
+                        <select id="sortSelect" onchange="applyFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm text-emerald-400 font-semibold">
+                            <option value="newest">Terbaru</option>
+                            <option value="oldest">Terlama</option>
+                            <option value="highest_rating">Rating Tertinggi</option>
+                            <option value="lowest_rating">Rating Terendah</option>
+                            <option value="az">Abjad (A - Z)</option>
+                            <option value="za">Abjad (Z - A)</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+                <div id="scriptsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="col-span-full text-center py-20 text-gray-400" id="loadingState">
+                        <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-4 text-emerald-500"></i>
+                        <p class="animate-pulse font-medium">Memuat koleksi script...</p>
+                    </div>
+                </div>
+                <div id="emptyState" class="hidden text-center py-24 text-gray-400">
+                    <i class="fa-solid fa-ghost text-4xl text-slate-500 mb-4 animate-bounce"></i>
+                    <p class="text-sm">Belum ada script yang cocok.</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- =================== SECTION: SNIPPETS =================== -->
+        <div id="section-snippets" class="hidden">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="glass-card rounded-2xl p-4 shadow-xl flex flex-col md:flex-row gap-3 items-center justify-between mb-8">
+                    <div class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="fa-solid fa-search text-gray-400"></i></div>
+                        <input type="text" id="snippetSearchInput" oninput="applySnippetFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm" placeholder="Cari kode snippets atau author...">
+                    </div>
+                </div>
+                <div id="snippetsContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20">
+                    <!-- Dinamis via JS -->
+                </div>
+            </section>
+        </div>
+
+        <!-- =================== SECTION: TOKO PANEL =================== -->
+        <div id="section-store" class="hidden">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-24">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-white mb-2">Toko Panel & Hosting</h2>
+                    <p class="text-gray-400 text-sm">Server VPS kencang, stabil, garansi terjamin untuk bot kesayanganmu.</p>
+                </div>
+                
+                <div class="mb-10">
+                    <div class="flex items-center gap-3 mb-4 border-b border-white/10 pb-2">
+                        <i class="fa-solid fa-server text-emerald-500 text-xl"></i>
+                        <h3 class="text-xl font-bold text-white">Beli Panel Pterodactyl</h3>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3" id="panelsContainer"></div>
                 </div>
 
-                <div class="flex flex-col md:flex-row w-full lg:w-auto gap-4">
-                    <!-- Filter Kategori -->
-                    <select id="categorySelect" onchange="applyFilters()" class="w-full md:w-auto bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 text-sm appearance-none cursor-pointer">
-                        <option value="all">Semua Kategori</option>
-                        <option value="Bot WhatsApp">Bot WhatsApp</option>
-                        <option value="Bot Telegram">Bot Telegram</option>
-                        <option value="Bot Discord">Bot Discord</option>
-                        <option value="Function">Function</option>
-                        <option value="Base">Base</option>
-                        <option value="Script Auto Order">Script Auto Order</option>
-                        <option value="Monitoring">Monitoring</option>
-                    </select>
-
-                    <!-- Filter Bahasa -->
-                    <select id="languageSelect" onchange="applyFilters()" class="w-full md:w-auto bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 text-sm appearance-none cursor-pointer">
-                        <option value="all">Semua Bahasa</option>
-                        <option value="Node.js">Node.js</option>
-                        <option value="Python">Python</option>
-                        <option value="PHP">PHP</option>
-                        <option value="JavaScript">JavaScript</option>
-                        <option value="TypeScript">TypeScript</option>
-                        <option value="Go">Go</option>
-                        <option value="Java">Java</option>
-                        <option value="C++">C++</option>
-                        <option value="C#">C#</option>
-                        <option value="Ruby">Ruby</option>
-                        <option value="Rust">Rust</option>
-                        <option value="Shell">Shell</option>
-                        <option value="HTML/CSS">HTML/CSS</option>
-                        <option value="Dart">Dart</option>
-                        <option value="Kotlin">Kotlin</option>
-                        <option value="Swift">Swift</option>
-                        <option value="SQL">SQL</option>
-                        <option value="Lua">Lua</option>
-                    </select>
-
-                    <!-- Urutkan -->
-                    <select id="sortSelect" onchange="applyFilters()" class="w-full md:w-auto bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 text-sm appearance-none cursor-pointer">
-                        <option value="newest">Terbaru</option>
-                        <option value="highest_rating">Rating Tertinggi</option>
-                        <option value="az">Abjad (A-Z)</option>
-                    </select>
+                <div>
+                    <div class="flex items-center gap-3 mb-4 border-b border-white/10 pb-2">
+                        <i class="fa-solid fa-users-gear text-cyan-500 text-xl"></i>
+                        <h3 class="text-xl font-bold text-white">Beli Role (Akses Buat Panel)</h3>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3" id="rolesContainer"></div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
 
-        <!-- Scripts Grid -->
-        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-            <div id="scriptsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="col-span-full text-center py-20 text-gray-400" id="loadingState">
-                    <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-4 text-emerald-500"></i>
-                    <p class="animate-pulse font-medium">Memuat koleksi script terbaik...</p>
+        <!-- =================== SECTION: KLAIM GARANSI =================== -->
+        <div id="section-claim" class="hidden">
+            <section class="w-full max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 pb-24">
+                <div class="glass-card rounded-[32px] p-6 md:p-10 shadow-2xl relative overflow-hidden text-center border border-white/10">
+                    
+                    <div class="mx-auto w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/30">
+                        <i class="fa-solid fa-shield-halved text-4xl text-white"></i>
+                    </div>
+                    
+                    <h2 class="text-2xl font-extrabold text-white mb-2 relative z-10">Klaim Garansi Panel</h2>
+                    <p class="text-gray-400 text-sm mb-8 relative z-10">Masukkan kode garansi (INV-XXX) yang diberikan oleh Admin. <span class="text-rose-400">Hanya berlaku 5 Hari!</span></p>
+                    
+                    <form id="claimWarrantyForm" class="space-y-5 relative z-10 text-left">
+                        <div>
+                            <label class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-1 block">Kode Struk/Garansi</label>
+                            <input type="text" id="claimCode" required class="w-full bg-slate-900/80 font-mono font-bold text-white border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-500 transition-all text-sm uppercase" placeholder="Contoh: INV-X1Y2Z3">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-1 block">No WhatsApp / Telegram</label>
+                            <input type="text" id="claimContact" required class="w-full bg-slate-900/80 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all text-sm" placeholder="Contoh: 08123456789 atau @username">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-1 block">Foto Bukti Kendala/Mati</label>
+                            <input type="file" id="claimImage" accept="image/*" required class="block w-full text-sm text-slate-400 file:mr-2 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20 cursor-pointer transition-colors" onchange="previewClaimImage(event)">
+                            <div id="claimPreviewContainer" class="mt-3 flex justify-center"></div>
+                        </div>
+                        <button type="submit" id="submitClaimBtn" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold py-4 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2 mt-4 text-base">
+                            <i class="fa-solid fa-paper-plane"></i> Kirim Permintaan Klaim
+                        </button>
+                    </form>
                 </div>
-            </div>
-            
-            <div id="emptyState" class="hidden text-center py-24 text-gray-400">
-                <div class="w-24 h-24 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/10 shadow-lg">
-                    <i class="fa-solid fa-ghost text-4xl text-slate-500 hover:animate-bounce"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2">Yah, Kosong!</h3>
-                <p class="text-sm">Belum ada script yang cocok dengan pencarianmu.</p>
-            </div>
-        </section>
+            </section>
+        </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 bg-slate-900/80 py-8 mt-auto backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <span class="font-bold text-white text-lg">Kyno<span class="text-emerald-500">Dev</span></span>
+            </div>
+            <p class="text-sm text-gray-400">Dibuat untuk Komunitas Bot.</p>
+            <div class="flex gap-4 items-center">
+                <button onclick="loginAdmin()" id="adminLoginBtn" class="text-gray-600 hover:text-emerald-500 transition-colors" title="Admin Login"><i class="fa-solid fa-key"></i></button>
+                <button onclick="logoutAdmin()" id="adminLogoutBtn" class="text-rose-500 hover:text-rose-400 transition-colors hidden" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+                <a href="https://t.me/KynJovent" target="_blank" class="text-gray-400 hover:text-emerald-400 transition-colors ml-2"><i class="fa-brands fa-telegram text-2xl"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- MODAL ADMIN PANEL -->
+    <div id="adminModal" class="fixed inset-0 z-[80] hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeModal('adminModal')"></div>
+        <div class="relative glass-card border border-amber-500/30 w-full max-w-md rounded-3xl shadow-2xl shadow-amber-500/10 p-6 transform scale-95 opacity-0 transition-all duration-300">
+            <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                <h3 class="text-xl font-extrabold text-amber-400"><i class="fa-solid fa-crown mr-2"></i>Admin Area</h3>
+                <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="space-y-4">
+                <p class="text-sm text-gray-300">Buat kode garansi baru untuk pembeli Panel.</p>
+                <button onclick="generateAdminWarranty()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-ticket"></i> Cetak Kode Garansi (5 Hari)
+                </button>
+                <div id="generatedCodeDisplay" class="hidden bg-slate-900 p-4 rounded-xl border border-dashed border-amber-500/50 text-center mt-4 relative">
+                    <p class="text-[10px] text-gray-400 uppercase mb-1">Berikan kode ini ke pembeli:</p>
+                    <p id="newCodeValue" class="text-xl font-mono font-bold text-amber-400 tracking-wider">INV-XXXXXX</p>
+                    <button onclick="copyGeneratedCode()" class="mt-2 text-xs bg-slate-800 text-white px-3 py-1.5 rounded-lg hover:bg-slate-700">Salin Kode</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CHECKOUT PANEL / ROLE -->
+    <div id="checkoutModal" class="fixed inset-0 z-[70] hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeModal('checkoutModal')"></div>
+        <div class="relative glass-card border border-white/10 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-6 transform scale-95 opacity-0 transition-all duration-300 custom-scroll" id="checkoutModalContent">
+            
+            <div class="flex justify-between items-start mb-2">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Detail Pesanan</h3>
+                <button onclick="closeModal('checkoutModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="text-center mb-5">
+                <div id="coIcon" class="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-2"><i class="fa-solid fa-server"></i></div>
+                <h3 id="coTitle" class="text-2xl font-extrabold text-white mb-1">PRODUK</h3>
+                <p id="coSubtitle" class="text-xs text-emerald-400 bg-emerald-500/10 inline-block px-2 py-1 rounded-md">Harga: Rp 0</p>
+            </div>
+
+            <div id="coDetails" class="bg-slate-900/50 p-4 rounded-xl mb-4 text-xs text-gray-300 border border-white/5 space-y-2.5"></div>
+
+            <div id="coRulesBox" class="bg-rose-500/10 p-3 rounded-xl border border-rose-500/20 mb-5 text-[11px] text-rose-200"></div>
+
+            <a id="waCheckoutBtn" href="#" target="_blank" class="flex justify-center items-center w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-xl transition-all shadow-lg text-sm">
+                <i class="fa-brands fa-whatsapp text-lg mr-2"></i> Pesan via WhatsApp
+            </a>
+        </div>
+    </div>
 
     <!-- MODAL: TAMBAH SCRIPT -->
     <div id="addScriptModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md" onclick="closeModal('addScriptModal')"></div>
-        <div class="relative glass-card border border-white/10 w-full max-w-2xl max-h-full overflow-y-auto rounded-3xl shadow-2xl p-6 md:p-10 transform scale-95 opacity-0 transition-all duration-300" id="addScriptModalContent">
-            
-            <div class="flex justify-between items-start mb-8 border-b border-white/10 pb-6">
-                <div>
-                    <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-2">Tambah Script Baru</h3>
-                    <p class="text-sm text-emerald-400">Berkontribusi dan bantu komunitas berkembang!</p>
-                </div>
-                <button onclick="closeModal('addScriptModal')" class="w-10 h-10 rounded-full bg-slate-800/80 hover:bg-rose-500/20 text-gray-400 hover:text-rose-500 flex items-center justify-center transition-colors shadow-inner border border-white/5">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+        <div class="relative glass-card border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 custom-scroll" id="addScriptModalContent">
+            <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                <h3 class="text-xl md:text-2xl font-extrabold text-white">Tambah Script</h3>
+                <button onclick="closeModal('addScriptModal')" class="text-gray-400 hover:text-white transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-
-            <form id="addScriptForm" class="space-y-8">
+            
+            <form id="addScriptForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-900/40 p-4 rounded-xl border border-white/5 text-center">
+                        <label class="block text-xs font-semibold text-emerald-400 mb-2">1. Thumbnail Utama (1 Foto)</label>
+                        <input type="file" id="scriptCover" accept="image/*" class="block w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-500/10 file:text-emerald-400 cursor-pointer" onchange="previewCover(event)">
+                        <div id="coverPreviewContainer" class="mt-3 flex justify-center"></div>
+                    </div>
+                    <div class="bg-slate-900/40 p-4 rounded-xl border border-white/5 text-center">
+                        <label class="block text-xs font-semibold text-cyan-400 mb-2">2. Foto Preview (Ops. Maks 3)</label>
+                        <input type="file" id="scriptPreviews" accept="image/*" multiple max="3" class="block w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-cyan-500/10 file:text-cyan-400 cursor-pointer" onchange="previewScreenshots(event)">
+                        <div id="screenshotsPreviewContainer" class="mt-3 flex justify-center gap-2 flex-wrap"></div>
+                    </div>
+                </div>
                 
-                <!-- Multi Image Upload (Preview/Showcase Script) -->
-                <div class="bg-slate-900/40 p-5 rounded-2xl border border-white/5">
-                    <label class="block text-sm font-semibold text-white mb-2"><i class="fa-solid fa-images text-emerald-400 mr-2"></i>Foto Preview Script (Maks 3 Foto)</label>
-                    <p class="text-xs text-gray-400 mb-4">Tunjukkan seperti apa tampilan atau hasil dari script ini.</p>
-                    
-                    <input type="file" id="scriptImages" accept="image/*" multiple max="3" class="block w-full text-sm text-slate-400 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20 cursor-pointer transition-colors" onchange="previewScriptImagesNew(event)">
-                    <div id="scriptImagesPreview" class="flex gap-3 mt-4 flex-wrap"></div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Nama Bot / Script</label>
-                        <input type="text" id="scriptName" required class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-sm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Nama Script</label>
+                        <input type="text" id="scriptName" required class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm">
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Nama Pembuat (Author)</label>
-                        <input type="text" id="scriptAuthor" required class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-sm">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Author</label>
+                        <input type="text" id="scriptAuthor" required class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm">
                     </div>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Kategori Script</label>
-                        <select id="scriptType" class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 text-sm">
-                            <option value="Bot WhatsApp">Bot WhatsApp</option>
-                            <option value="Bot Telegram">Bot Telegram</option>
-                            <option value="Bot Discord">Bot Discord</option>
-                            <option value="Function">Function</option>
-                            <option value="Base">Base</option>
-                            <option value="Script Auto Order">Script Auto Order</option>
-                            <option value="Monitoring">Monitoring</option>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Kategori</label>
+                        <select id="scriptType" class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm">
+                            <option value="Bot WhatsApp">Bot WhatsApp</option><option value="Bot Telegram">Bot Telegram</option><option value="Bot Discord">Bot Discord</option><option value="Function">Function</option><option value="Base">Base</option><option value="Script Auto Order">Script Auto Order</option><option value="Monitoring">Monitoring</option>
                         </select>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Bahasa Pemrograman</label>
-                        <select id="scriptLang" class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 text-sm">
-                            <option value="Node.js">Node.js</option>
-                            <option value="Python">Python</option>
-                            <option value="PHP">PHP</option>
-                            <option value="JavaScript">JavaScript</option>
-                            <option value="TypeScript">TypeScript</option>
-                            <option value="Go">Go</option>
-                            <option value="Java">Java</option>
-                            <option value="C++">C++</option>
-                            <option value="C#">C#</option>
-                            <option value="Ruby">Ruby</option>
-                            <option value="Rust">Rust</option>
-                            <option value="Shell">Shell</option>
-                            <option value="HTML/CSS">HTML/CSS</option>
-                            <option value="Dart">Dart</option>
-                            <option value="Kotlin">Kotlin</option>
-                            <option value="Swift">Swift</option>
-                            <option value="SQL">SQL</option>
-                            <option value="Lua">Lua</option>
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Bahasa</label>
+                        <select id="scriptLang" class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm">
+                            <option value="Node.js">Node.js</option><option value="Python">Python</option><option value="PHP">PHP</option><option value="JavaScript">JavaScript</option><option value="TypeScript">TypeScript</option><option value="Go">Go</option><option value="Java">Java</option><option value="C++">C++</option><option value="C#">C#</option><option value="Ruby">Ruby</option><option value="Rust">Rust</option><option value="Shell">Shell</option><option value="HTML/CSS">HTML/CSS</option><option value="Dart">Dart</option><option value="Kotlin">Kotlin</option><option value="Swift">Swift</option><option value="SQL">SQL</option><option value="Lua">Lua</option>
                         </select>
                     </div>
                 </div>
-
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Deskripsi Singkat & Fitur</label>
-                    <textarea id="scriptDesc" required rows="4" class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 resize-none text-sm placeholder-slate-600" placeholder="Contoh: Fitur anti-link, downloader tiktok, auto-respon, dll..."></textarea>
+                
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Deskripsi Singkat</label>
+                    <textarea id="scriptDesc" required rows="3" class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 resize-none text-sm"></textarea>
                 </div>
-
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Link Unduhan / Repositori</label>
+                
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Link Unduhan <span class="text-rose-400 lowercase">(Github/Mediafire)</span></label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500"><i class="fa-solid fa-link"></i></div>
-                        <input type="url" id="scriptLink" required class="w-full bg-slate-900/60 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-sm" placeholder="https://github.com/... atau link G-Drive">
+                        <input type="url" id="scriptLink" required class="w-full bg-slate-900/60 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-rose-500 transition-all text-sm">
                     </div>
                 </div>
-
-                <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-white font-bold py-4 rounded-xl mt-4 transition-all transform hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/25 flex justify-center items-center gap-2 text-lg border border-white/10">
-                    <i class="fa-solid fa-paper-plane"></i> Publikasikan ke Komunitas
+                
+                <button type="submit" id="submitBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Upload Script
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL: REVIEW SYSTEM -->
+    <!-- MODAL: TAMBAH SNIPPET (Lengkap) -->
+    <div id="addSnippetModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md" onclick="closeModal('addSnippetModal')"></div>
+        <div class="relative glass-card border border-white/10 w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 custom-scroll" id="addSnippetModalContent">
+            <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                <h3 class="text-xl font-extrabold text-white" id="snippetModalTitle">Bagikan Snippet</h3>
+                <button onclick="closeModal('addSnippetModal')" class="text-gray-400 hover:text-white transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="addSnippetForm" class="space-y-4">
+                <input type="hidden" id="editSnippetId" value="">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase">Judul Snippet</label>
+                        <input type="text" id="snipTitle" required class="w-full mt-1 bg-slate-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:border-emerald-500 text-sm" placeholder="Misal: Auto Download FB">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase">Author</label>
+                        <input type="text" id="snipAuthor" required class="w-full mt-1 bg-slate-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:border-emerald-500 text-sm" placeholder="Nama Kamu">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase">Tipe Modul</label>
+                    <select id="snipType" class="w-full mt-1 bg-slate-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:border-emerald-500 text-sm">
+                        <option value="Modul CJS">Modul CJS (CommonJS)</option>
+                        <option value="Modul ESM">Modul ESM (ES Modules)</option>
+                        <option value="JSON/Config">JSON / Config</option>
+                        <option value="Regex/Utils">Regex / Utils</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase">Kode Snippet</label>
+                    <textarea id="snipCode" required rows="8" class="w-full mt-1 bg-[#1e1e1e] font-mono border border-white/10 rounded-xl px-4 py-3 text-emerald-400 focus:border-emerald-500 text-xs resize-none" placeholder="Masukkan kode di sini..."></textarea>
+                </div>
+
+                <button type="submit" id="submitSnipBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-save"></i> Simpan Snippet
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: TAMPILKAN PREVIEW FOTO -->
+    <div id="viewPreviewModal" class="fixed inset-0 z-[70] hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/95 backdrop-blur-md" onclick="closeModal('viewPreviewModal')"></div>
+        <div class="relative w-full max-w-4xl max-h-full flex flex-col transform scale-95 opacity-0 transition-all duration-300" id="viewPreviewModalContent">
+            <div class="flex justify-end mb-4"><button onclick="closeModal('viewPreviewModal')" class="text-white hover:text-rose-500 text-3xl"><i class="fa-solid fa-circle-xmark"></i></button></div>
+            <div id="previewGallery" class="flex overflow-x-auto gap-4 snap-x snap-mandatory pb-4 custom-scroll"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: RUN SNIPPET -->
+    <div id="runSnippetModal" class="fixed inset-0 z-[70] hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeModal('runSnippetModal')"></div>
+        <div class="relative glass-card border border-white/10 w-full max-w-2xl rounded-3xl shadow-2xl p-6 transform scale-95 opacity-0 transition-all duration-300" id="runSnippetModalContent">
+            <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-terminal text-emerald-500 mr-2"></i>Test Code (Eksperimental)</h3>
+                <button onclick="closeModal('runSnippetModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <p class="text-[11px] text-yellow-500 mb-2">*Hanya mendukung eksekusi logika Javascript murni (Math, Regex, Data Structure). Import modul backend tidak didukung.</p>
+            <div id="terminalOutput" class="terminal-output mb-4"></div>
+            <textarea id="hiddenCodeToRun" class="hidden"></textarea>
+            <button onclick="executeCode()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-2 rounded-lg text-sm">
+                <i class="fa-solid fa-play"></i> Jalankan Kode
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL: REVIEW (Untuk Script & Snippet) -->
     <div id="reviewModal" class="fixed inset-0 z-[60] hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeModal('reviewModal')"></div>
-        <div class="relative glass-card border border-white/10 w-full max-w-xl max-h-full overflow-y-auto rounded-3xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300" id="reviewModalContent">
-            
+        <div class="relative glass-card border border-white/10 w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 custom-scroll" id="reviewModalContent">
             <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
                 <h3 class="text-xl font-extrabold text-white">Ulasan & Rating</h3>
-                <button onclick="closeModal('reviewModal')" class="text-gray-400 hover:text-white transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="closeModal('reviewModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-
-            <!-- List Reviews -->
-            <div id="reviewsList" class="space-y-4 mb-6 max-h-72 overflow-y-auto pr-2 custom-scroll">
-                <div class="text-center text-sm text-gray-500 py-4" id="emptyReviews">Belum ada ulasan. Jadilah yang pertama!</div>
-            </div>
-
-            <!-- Form Add Review -->
-            <form id="addReviewForm" class="bg-slate-900/60 p-5 rounded-2xl border border-white/10 space-y-4">
-                <h4 class="text-sm font-bold text-emerald-400 uppercase tracking-wider">Tulis Ulasan Anda</h4>
-                
-                <!-- Star Rating -->
-                <div class="flex flex-row-reverse justify-end star-rating gap-2">
-                    <input type="radio" id="star5" name="rating" value="5" required /><label for="star5" title="5 Bintang"><i class="fa-solid fa-star"></i></label>
-                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 Bintang"><i class="fa-solid fa-star"></i></label>
-                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 Bintang"><i class="fa-solid fa-star"></i></label>
-                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 Bintang"><i class="fa-solid fa-star"></i></label>
-                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 Bintang"><i class="fa-solid fa-star"></i></label>
+            
+            <div id="reviewsList" class="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2 custom-scroll"></div>
+            
+            <form id="addReviewForm" class="bg-slate-900/60 p-4 rounded-xl border border-white/10 space-y-3">
+                <h4 class="text-sm font-bold text-emerald-400">Tulis Ulasan Anda</h4>
+                <div class="flex flex-row-reverse justify-end star-rating gap-1">
+                    <input type="radio" id="star5" name="rating" value="5" required /><label for="star5"><i class="fa-solid fa-star"></i></label>
+                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4"><i class="fa-solid fa-star"></i></label>
+                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3"><i class="fa-solid fa-star"></i></label>
+                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2"><i class="fa-solid fa-star"></i></label>
+                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1"><i class="fa-solid fa-star"></i></label>
                 </div>
-
-                <input type="text" id="reviewerName" required class="w-full bg-slate-900/80 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:outline-none text-sm" placeholder="Nama Anda">
-                <textarea id="reviewText" required rows="3" class="w-full bg-slate-900/80 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:outline-none resize-none text-sm" placeholder="Bagaimana pengalaman Anda memakai script ini?"></textarea>
+                <input type="text" id="reviewerName" required class="w-full bg-slate-900/80 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 text-sm" placeholder="Nama Anda">
+                <textarea id="reviewText" required rows="2" class="w-full bg-slate-900/80 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 resize-none text-sm" placeholder="Bagaimana pengalaman Anda?"></textarea>
                 
-                <!-- Multi Image Upload for Reviews -->
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 mb-2">Upload Bukti Foto (Ops. Maks 3)</label>
-                    <input type="file" id="reviewImages" accept="image/*" multiple class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20 cursor-pointer" onchange="previewReviewImages(event)" max="3">
-                    <div id="reviewImagesPreview" class="flex gap-2 mt-3 flex-wrap"></div>
-                </div>
-
-                <input type="hidden" id="currentScriptIdForReview">
+                <input type="hidden" id="currentReviewId">
+                <input type="hidden" id="currentReviewCollection">
                 
-                <button type="submit" id="submitReviewBtn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl text-sm transition-colors flex justify-center items-center gap-2 border border-emerald-400/50">
-                    Kirim Ulasan Bintang
+                <button type="submit" id="submitReviewBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-xl text-sm transition-colors">
+                    Kirim Ulasan
                 </button>
             </form>
         </div>
@@ -318,378 +491,411 @@
 
     <div id="toastContainer" class="fixed bottom-4 right-4 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
+    <!-- UI & LOGIC JAVASCRIPT -->
     <script>
-        let allScripts = [];
-        let newScriptFiles = []; // File foto showcase
-        let reviewFiles = [];    // File foto ulasan
+        // --- JAM & TAB ---
+        setInterval(() => { document.getElementById('realtimeClock').innerText = new Date().toLocaleTimeString('id-ID'); }, 1000);
+        document.getElementById('onlineCounter').innerText = Math.floor(Math.random() * 100) + 50;
+        setInterval(() => {
+            const current = parseInt(document.getElementById('onlineCounter').innerText);
+            document.getElementById('onlineCounter').innerText = Math.max(50, current + (Math.floor(Math.random() * 5) - 2));
+        }, 15000);
 
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            const content = document.getElementById(modalId + 'Content');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            const content = document.getElementById(modalId + 'Content');
-            content.classList.remove('scale-100', 'opacity-100');
-            content.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
-        }
-
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-500 border-emerald-400' : 'bg-rose-500 border-rose-400';
-            const icon = type === 'success' ? 'fa-check-circle' : 'fa-circle-exclamation';
-
-            toast.className = `flex items-center gap-3 px-5 py-4 rounded-xl shadow-2xl shadow-black/50 font-semibold text-sm text-white ${bgColor} border toast-enter pointer-events-auto backdrop-blur-md`;
-            toast.innerHTML = `<i class="fa-solid ${icon} text-xl"></i><span>${message}</span>`;
-            
-            container.appendChild(toast);
-            requestAnimationFrame(() => {
-                toast.classList.remove('toast-enter');
-                toast.classList.add('toast-enter-active');
+        function switchTab(tabId) {
+            ['scripts', 'snippets', 'store', 'claim'].forEach(id => {
+                document.getElementById('section-' + id).classList.add('hidden');
+                document.getElementById('tab-' + id).className = 'tab-inactive pb-3 text-sm transition-colors';
             });
-
-            setTimeout(() => {
-                toast.classList.add('toast-leave');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        function previewScriptImagesNew(event) {
-            const container = document.getElementById('scriptImagesPreview');
-            container.innerHTML = '';
-            newScriptFiles = Array.from(event.target.files).slice(0, 3);
+            document.getElementById('section-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).className = 'tab-active pb-3 text-sm transition-colors';
             
-            newScriptFiles.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = "w-20 h-20 object-cover rounded-xl border-2 border-emerald-500/30 shadow-lg";
-                    container.appendChild(img);
-                }
-                reader.readAsDataURL(file);
-            });
+            const btn = document.getElementById('mainActionBtn');
+            if(tabId === 'scripts') { 
+                btn.classList.remove('hidden'); document.getElementById('btnText').innerText = "Upload Script"; 
+                btn.onclick = () => openModal('addScriptModal'); 
+            } else if (tabId === 'snippets') { 
+                btn.classList.remove('hidden'); document.getElementById('btnText').innerText = "Buat Snippet"; 
+                btn.onclick = () => { document.getElementById('addSnippetForm').reset(); document.getElementById('editSnippetId').value=''; document.getElementById('snippetModalTitle').innerText="Bagikan Snippet"; openModal('addSnippetModal'); };
+            } else { btn.classList.add('hidden'); }
         }
 
-        function previewReviewImages(event) {
-            const container = document.getElementById('reviewImagesPreview');
-            container.innerHTML = '';
-            reviewFiles = Array.from(event.target.files).slice(0, 3);
+        // --- TOKO PANEL & ROLE GENERATOR ---
+        const panels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'UNLIMITED'];
+        const pContainer = document.getElementById('panelsContainer');
+        panels.forEach((p) => {
+            const name = p === 'UNLIMITED' ? 'UNLIMITED' : `${p} GB`;
+            const price = p === 'UNLIMITED' ? 15000 : p * 1000;
+            pContainer.innerHTML += `<div class="glass-card rounded-xl p-3 hover:border-emerald-500/50 transition-colors text-center cursor-pointer" onclick="openCheckout('panel', '${name}', '${name}', '${name}', ${price})"><h4 class="font-bold text-white text-sm mb-0.5">${name}</h4><p class="text-[10px] text-emerald-500">Rp ${price/1000}K</p></div>`;
+        });
+
+        const roleData = { "RESS": {limit: 5, dur: "7 Hari", p: 5000}, "PREM": {limit: 10, dur: "7 Hari", p: 10000}, "ADP": {limit: 15, dur: "14 Hari", p: 15000}, "PT": {limit: 20, dur: "14 Hari", p: 20000}, "TK": {limit: 25, dur: "14 Hari", p: 25000}, "CEO": {limit: 30, dur: "14 Hari", p: 30000}, "SECURITY": {limit: 35, dur: "14 Hari", p: 35000}, "SVIP": {limit: 40, dur: "14 Hari", p: 40000}, "DEV": {limit: 45, dur: "14 Hari", p: 45000}, "PEMILIK": {limit: 50, dur: "14 Hari", p: 50000}, "CO-FOUNDER": {limit: 60, dur: "14 Hari", p: 60000}, "KING": {limit: 100, dur: "14 Hari", p: 100000}, "FOUNDER": {limit: "UNLIMITED", dur: "Permanen", p: 150000} };
+        const rContainer = document.getElementById('rolesContainer');
+        Object.keys(roleData).forEach(role => {
+            rContainer.innerHTML += `<div class="glass-card rounded-xl p-3 hover:border-cyan-500/50 transition-colors text-center cursor-pointer" onclick="openCheckout('role', '${role}', '${roleData[role].limit}', '${roleData[role].dur}', ${roleData[role].p})"><h4 class="font-bold text-white text-sm mb-0.5">${role}</h4><p class="text-[10px] text-cyan-400">Rp ${roleData[role].p/1000}K</p></div>`;
+        });
+
+        function openCheckout(type, name, limitOrDisk, durationOrRam, price) {
+            const invCode = 'INV-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            document.getElementById('coInvoice').innerText = invCode;
+            document.getElementById('coTitle').innerText = name;
+            document.getElementById('coSubtitle').innerText = `Rp ${price.toLocaleString('id-ID')}`;
             
-            reviewFiles.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = "w-14 h-14 object-cover rounded-lg border border-white/20";
-                    container.appendChild(img);
-                }
-                reader.readAsDataURL(file);
-            });
+            const details = document.getElementById('coDetails');
+            const rules = document.getElementById('coRulesBox');
+            let messageText = `Halo Kyno, saya mau beli ${type === 'panel' ? 'Panel' : 'Role'} *${name}*\n*Kode Garansi:* ${invCode}\n_Saya akan sertakan bukti pembayaran setelah ini._`;
+
+            if(type === 'panel') {
+                document.getElementById('coIcon').innerHTML = '<i class="fa-solid fa-server"></i>'; document.getElementById('coIcon').className = "w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-2";
+                details.innerHTML = `<p><i class="fa-solid fa-memory text-emerald-500 w-5"></i> <strong>RAM:</strong> ${durationOrRam}</p><p><i class="fa-solid fa-hard-drive text-emerald-500 w-5"></i> <strong>Storage:</strong> ${limitOrDisk}</p>`;
+                rules.innerHTML = `<ul class="list-disc pl-4 space-y-1"><li><strong>Garansi 5 Hari</strong> wajib sertakan kode bukti di atas.</li><li>Dilarang Patungan (No PTPT).</li><li>Tema Reviactyl.</li></ul>`;
+                rules.classList.remove('hidden');
+            } else {
+                document.getElementById('coIcon').innerHTML = '<i class="fa-solid fa-users-gear"></i>'; document.getElementById('coIcon').className = "w-14 h-14 bg-cyan-500/20 text-cyan-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-2";
+                details.innerHTML = `<p><i class="fa-solid fa-infinity text-cyan-500 w-5"></i> <strong>Limit Panel:</strong> ${limitOrDisk}</p><p><i class="fa-solid fa-clock text-cyan-500 w-5"></i> <strong>Durasi:</strong> ${durationOrRam}</p><div class="border-t border-white/5 pt-2 mt-2"><p class="text-[10px] text-gray-400">Spek Server: VPS R8 C4 (DO-Regular/Intel Premium).</p><p class="text-[10px] text-gray-400 mt-0.5">Benefit Tambahan: Masuk Grup CPanel Khusus.</p><p class="text-[10px] text-rose-400 mt-0.5 font-bold">Role tidak memiliki Garansi!</p></div>`;
+                rules.classList.add('hidden'); 
+            }
+            document.getElementById('waCheckoutBtn').href = `https://wa.me/6283834096675?text=${encodeURIComponent(messageText)}`;
+            openModal('checkoutModal');
         }
+
+        function copyInvoice() {
+            navigator.clipboard.writeText(document.getElementById('coInvoice').innerText); showToast("Kode Disalin!");
+        }
+
+        // --- GLOBAL MODAL & TOAST ---
+        function openModal(modalId) { const m = document.getElementById(modalId); const c = document.getElementById(modalId + 'Content'); m.classList.remove('hidden'); m.classList.add('flex'); setTimeout(() => { c.classList.remove('scale-95', 'opacity-0'); c.classList.add('scale-100', 'opacity-100'); }, 10); }
+        function closeModal(modalId) { const m = document.getElementById(modalId); const c = document.getElementById(modalId + 'Content'); c.classList.remove('scale-100', 'opacity-100'); c.classList.add('scale-95', 'opacity-0'); setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300); }
+        function showToast(message, type = 'success') { const cont = document.getElementById('toastContainer'); const t = document.createElement('div'); const bg = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'; t.className = `flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl font-semibold text-sm text-white ${bg} border border-white/20 toast-enter pointer-events-auto`; t.innerHTML = `<span>${message}</span>`; cont.appendChild(t); requestAnimationFrame(() => { t.classList.remove('toast-enter'); t.classList.add('toast-enter-active'); }); setTimeout(() => { t.classList.add('toast-leave'); setTimeout(() => t.remove(), 300); }, 3000); }
+
+        // --- PREVIEWS ---
+        let fileCover = null; let filePreviews = []; let claimImage = null;
+        function previewCover(e) { const c = document.getElementById('coverPreviewContainer'); c.innerHTML = ''; if(e.target.files[0]) { fileCover = e.target.files[0]; const r = new FileReader(); r.onload = (ev) => c.innerHTML = `<img src="${ev.target.result}" class="w-16 h-16 object-cover rounded-lg border border-emerald-500/50">`; r.readAsDataURL(fileCover); } }
+        function previewScreenshots(e) { const c = document.getElementById('screenshotsPreviewContainer'); c.innerHTML = ''; filePreviews = Array.from(e.target.files).slice(0, 3); filePreviews.forEach(f => { const r = new FileReader(); r.onload = (ev) => c.innerHTML += `<img src="${ev.target.result}" class="w-12 h-12 object-cover rounded-lg border border-cyan-500/50">`; r.readAsDataURL(f); }); }
+        function previewClaimImage(e) { const c = document.getElementById('claimPreviewContainer'); c.innerHTML = ''; if(e.target.files[0]) { claimImage = e.target.files[0]; const r = new FileReader(); r.onload = (ev) => c.innerHTML = `<img src="${ev.target.result}" class="w-20 h-20 object-cover rounded-xl border-2 border-emerald-500/50 shadow-lg">`; r.readAsDataURL(claimImage); } }
+        function showGallery(imagesStr) { const images = imagesStr ? imagesStr.split(',') : []; const c = document.getElementById('previewGallery'); c.innerHTML = ''; if(images.length === 0) c.innerHTML = '<p class="text-white text-center w-full">Preview kosong.</p>'; else images.forEach(img => c.innerHTML += `<img src="${img}" class="h-96 object-contain rounded-xl snap-center shrink-0 border border-white/10">`); openModal('viewPreviewModal'); }
+
+        // --- SNIPPET LOGIC ---
+        function copyCode(codeId) { navigator.clipboard.writeText(document.getElementById(codeId).innerText); showToast("Kode disalin!"); }
+        function testSnippet(codeId) {
+            document.getElementById('hiddenCodeToRun').value = document.getElementById(codeId).innerText;
+            document.getElementById('terminalOutput').innerHTML = '<span class="text-gray-500">Terminal ready...</span><br>';
+            openModal('runSnippetModal');
+        }
+        function executeCode() {
+            const code = document.getElementById('hiddenCodeToRun').value; const term = document.getElementById('terminalOutput');
+            term.innerHTML = '<span class="text-gray-500">Executing...</span><br>';
+            const origLog = console.log; console.log = function(...args) { term.innerHTML += args.join(' ') + '<br>'; origLog.apply(console, args); };
+            try { new Function(code)(); term.innerHTML += '<br><span class="text-emerald-500">Execution finished.</span>'; } 
+            catch (err) { term.innerHTML += `<span class="text-rose-500">Error: ${err.message}</span>`; }
+            console.log = origLog;
+        }
+
+        // Revisi Snippet (Set ke modal dengan ID untuk update)
+        function editSnippet(id, title, type, author, codeId) {
+            document.getElementById('editSnippetId').value = id;
+            document.getElementById('snipTitle').value = title;
+            document.getElementById('snipAuthor').value = author;
+            document.getElementById('snipType').value = type;
+            document.getElementById('snipCode').value = document.getElementById(codeId).innerText;
+            document.getElementById('snippetModalTitle').innerText = "Revisi Snippet";
+            openModal('addSnippetModal');
+        }
+
     </script>
 
-    <!-- HANYA FIRESTORE -->
+    <!-- FIREBASE & DB -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <script>
-        // 1. CONFIG FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyB2hmPdgq14RYlJ37F6TzbdrEqpoP77otQ",
-            authDomain: "database-for-scripts-496e5.firebaseapp.com",
-            projectId: "database-for-scripts-496e5",
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyB2hmPdgq14RYlJ37F6TzbdrEqpoP77otQ", authDomain: "database-for-scripts-496e5.firebaseapp.com", projectId: "database-for-scripts-496e5" };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // 2. CONFIG IMGBB API
+        const db = firebase.firestore(); const auth = firebase.auth();
         const imgbbApiKey = "3c1b551a0634329ac4b537b8b0db493c";
 
-        // Fungsi Upload Gambar ke ImgBB
-        async function uploadToImgbb(file) {
-            const formData = new FormData();
-            formData.append("image", file);
-            
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
-                method: "POST",
-                body: formData
-            });
-            
-            const data = await response.json();
-            if (data.success) {
-                return data.data.url;
+        let isAdmin = false;
+        // GANTI EMAIL INI DENGAN EMAIL GOOGLE KAMU!
+        const ADMIN_EMAIL = "ryoga9753@gmail.com"; 
+
+        // --- AUTH ADMIN LOGIC ---
+        auth.onAuthStateChanged(function(user) {
+            if (user && user.email === ADMIN_EMAIL) {
+                isAdmin = true;
+                document.body.classList.add('admin-mode'); // Menampilkan tombol hapus
+                document.getElementById('adminArea').classList.remove('hidden');
+                document.getElementById('adminLoginBtn').classList.add('hidden');
+                document.getElementById('adminLogoutBtn').classList.remove('hidden');
             } else {
-                throw new Error("Gagal mengunggah foto ke ImgBB");
-            }
-        }
-
-
-        // ---- TAMBAH SCRIPT UTAMA ----
-        const addScriptForm = document.getElementById('addScriptForm');
-        addScriptForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const submitBtn = document.getElementById('submitBtn');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sedang Memproses...';
-            submitBtn.disabled = true;
-
-            try {
-                const name = document.getElementById('scriptName').value;
-                let imageUrls = [];
-
-                // Upload gambar pakai ImgBB
-                if (newScriptFiles.length > 0) {
-                    const uploadPromises = newScriptFiles.map(file => uploadToImgbb(file));
-                    imageUrls = await Promise.all(uploadPromises);
-                }
-
-                await db.collection("scripts").add({
-                    title: name,
-                    author: document.getElementById('scriptAuthor').value,
-                    description: document.getElementById('scriptDesc').value,
-                    language: document.getElementById('scriptLang').value,
-                    type: document.getElementById('scriptType').value,
-                    downloadLink: document.getElementById('scriptLink').value,
-                    images: imageUrls, 
-                    ratingSum: 0,
-                    reviewCount: 0,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                });
-
-                showToast("Berhasil! Script-mu sudah tayang.", "success");
-                addScriptForm.reset();
-                document.getElementById('scriptImagesPreview').innerHTML = '';
-                newScriptFiles = [];
-                closeModal('addScriptModal');
-                loadScripts();
-            } catch (error) {
-                console.error(error);
-                showToast("Gagal menyimpan data.", "error");
-            } finally {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+                isAdmin = false;
+                document.body.classList.remove('admin-mode');
+                document.getElementById('adminArea').classList.add('hidden');
+                document.getElementById('adminLoginBtn').classList.remove('hidden');
+                document.getElementById('adminLogoutBtn').classList.add('hidden');
             }
         });
 
-        // ---- LOAD SCRIPTS ----
-        async function loadScripts() {
+        function loginAdmin() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).then((res) => {
+                if(res.user.email !== ADMIN_EMAIL) { showToast("Akses Ditolak!", "error"); auth.signOut(); } 
+                else showToast("Berhasil Login Admin!", "success");
+            }).catch(err => showToast("Gagal Login.", "error"));
+        }
+        function logoutAdmin() { auth.signOut(); showToast("Logged out."); }
+
+        // --- ADMIN GENERATE KODE GARANSI ---
+        async function generateAdminWarranty() {
+            const code = 'INV-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            const expiresAt = new Date(); expiresAt.setDate(expiresAt.getDate() + 5);
+            await db.collection("warranties").doc(code).set({ code: code, isValid: true, expiresAt: expiresAt, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            document.getElementById('generatedCodeDisplay').classList.remove('hidden'); document.getElementById('newCodeValue').innerText = code;
+        }
+        function copyGeneratedCode() { navigator.clipboard.writeText(document.getElementById('newCodeValue').innerText); showToast("Kode Disalin!"); }
+
+        // --- DELETE DATA (ADMIN ONLY) ---
+        async function deleteData(collection, id) {
+            if(!isAdmin) return;
+            if(!confirm("Yakin ingin menghapus postingan ini secara permanen?")) return;
             try {
-                const querySnapshot = await db.collection("scripts").orderBy("createdAt", "desc").get();
-                allScripts = [];
-                querySnapshot.forEach((doc) => {
-                    allScripts.push({ id: doc.id, ...doc.data() });
-                });
+                await db.collection(collection).doc(id).delete();
+                showToast("Postingan Dihapus!", "success");
+                loadData();
+            } catch(e) { showToast("Gagal menghapus.", "error"); }
+        }
+
+        // --- CLAIM WARRANTY CHECKER ---
+        document.getElementById('claimWarrantyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitClaimBtn'); btn.disabled = true; btn.innerText = "Mengecek Kode...";
+            const code = document.getElementById('claimCode').value.toUpperCase(); const contact = document.getElementById('claimContact').value;
+            try {
+                const doc = await db.collection('warranties').doc(code).get();
+                if (!doc.exists) showToast("Kode Garansi TIDAK DITEMUKAN!", "error");
+                else {
+                    const data = doc.data(); const now = new Date(); const expiry = data.expiresAt.toDate();
+                    if (!data.isValid) showToast("Kode sudah pernah diklaim!", "error");
+                    else if (now > expiry) showToast("Masa Garansi (5 Hari) habis!", "error");
+                    else {
+                        btn.innerText = "Mengunggah Bukti...";
+                        const fd = new FormData(); fd.append("image", claimImage);
+                        const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, { method: "POST", body: fd });
+                        const imgData = await res.json();
+                        await db.collection("claims").add({ code: code, contact: contact, proofUrl: imgData.data.url, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                        showToast("Klaim Diterima! Admin akan mengecek.", "success");
+                        document.getElementById('claimWarrantyForm').reset(); document.getElementById('claimPreviewContainer').innerHTML = '';
+                    }
+                }
+            } catch (err) { showToast("Terjadi kesalahan.", "error"); } finally { btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Permintaan Klaim`; btn.disabled = false; }
+        });
+
+        // --- DATA LOGIC ---
+        async function uploadToImgbb(file) {
+            const fd = new FormData(); fd.append("image", file);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, { method: "POST", body: fd });
+            const data = await res.json(); if (data.success) return data.data.url; throw new Error();
+        }
+
+        let allScripts = []; let allSnippets = [];
+
+        document.getElementById('addScriptForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const link = document.getElementById('scriptLink').value.toLowerCase();
+            if (!link.includes('github.com') && !link.includes('mediafire.com')) return showToast("Hanya Github/Mediafire!", "error");
+            const btn = document.getElementById('submitBtn'); const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; btn.disabled = true;
+            try {
+                let coverUrl = ""; let previewUrls = [];
+                if (fileCover) coverUrl = await uploadToImgbb(fileCover);
+                if (filePreviews.length > 0) previewUrls = await Promise.all(filePreviews.map(f => uploadToImgbb(f)));
+                await db.collection("scripts").add({ title: document.getElementById('scriptName').value, author: document.getElementById('scriptAuthor').value, description: document.getElementById('scriptDesc').value, language: document.getElementById('scriptLang').value, type: document.getElementById('scriptType').value, downloadLink: document.getElementById('scriptLink').value, cover: coverUrl, previews: previewUrls, ratingSum: 0, reviewCount: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                showToast("Berhasil!"); document.getElementById('addScriptForm').reset(); document.getElementById('coverPreviewContainer').innerHTML=''; document.getElementById('screenshotsPreviewContainer').innerHTML=''; fileCover = null; filePreviews = []; closeModal('addScriptModal'); loadData();
+            } catch (err) { showToast("Gagal menyimpan.", "error"); } finally { btn.innerHTML = orig; btn.disabled = false; }
+        });
+
+        document.getElementById('addSnippetForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitSnipBtn'); btn.disabled = true; btn.innerText = "Processing...";
+            const editId = document.getElementById('editSnippetId').value;
+            const snipData = { title: document.getElementById('snipTitle').value, author: document.getElementById('snipAuthor').value, type: document.getElementById('snipType').value, code: document.getElementById('snipCode').value };
+            
+            try {
+                if(editId) {
+                    await db.collection("snippets").doc(editId).update(snipData);
+                    showToast("Snippet direvisi!");
+                } else {
+                    snipData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    snipData.ratingSum = 0; snipData.reviewCount = 0;
+                    await db.collection("snippets").add(snipData);
+                    showToast("Snippet tersimpan!");
+                }
+                document.getElementById('addSnippetForm').reset(); document.getElementById('editSnippetId').value = ''; closeModal('addSnippetModal'); loadData();
+            } catch(e) { showToast("Gagal", "error"); } finally { btn.disabled = false; btn.innerText = "Simpan Snippet"; }
+        });
+
+        async function loadData() {
+            try {
+                const qsS = await db.collection("scripts").get();
+                allScripts = []; qsS.forEach(d => allScripts.push({ id: d.id, ...d.data() }));
+                
+                const qsSnip = await db.collection("snippets").get();
+                allSnippets = []; qsSnip.forEach(d => allSnippets.push({ id: d.id, ...d.data() }));
+                
                 document.getElementById('loadingState').classList.add('hidden');
-                applyFilters();
-            } catch (error) {
-                document.getElementById('loadingState').innerHTML = `<p class="text-rose-400">Gagal terhubung ke database.</p>`;
+                applyFilters(); applySnippetFilters();
+            } catch (error) { document.getElementById('loadingState').innerHTML = `<p class="text-rose-400">Gagal terhubung database.</p>`; }
+        }
+
+        // --- RENDER SCRIPTS (CARD DESIGN SESUAI REFERENSI) ---
+        function renderScripts(arr) {
+            const cont = document.getElementById('scriptsContainer'); const emp = document.getElementById('emptyState'); cont.innerHTML = '';
+            if (arr.length === 0) emp.classList.remove('hidden'); else {
+                emp.classList.add('hidden');
+                arr.forEach(data => {
+                    const imgSrc = data.cover || 'https://placehold.co/600x300/1e293b/10b981?text=No+Cover';
+                    const avgR = data.reviewCount > 0 ? (data.ratingSum / data.reviewCount).toFixed(1) : '0.0';
+                    const pStr = (data.previews && data.previews.length > 0) ? data.previews.join(',') : '';
+                    cont.innerHTML += `
+                        <div class="glass-card rounded-[24px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/15 transition-all duration-300 flex flex-col h-full group relative pb-4">
+                            
+                            <!-- ADMIN DELETE BUTTON -->
+                            <button onclick="deleteData('scripts', '${data.id}')" class="admin-only-btn absolute top-3 right-3 z-50 bg-rose-500 hover:bg-rose-400 text-white w-8 h-8 rounded-full shadow-lg flex items-center justify-center transition-colors"><i class="fa-solid fa-trash text-sm"></i></button>
+
+                            <div class="relative w-full h-48 overflow-hidden bg-slate-800">
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#1e293b] to-transparent z-10"></div>
+                                <img src="${imgSrc}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                                
+                                <div class="absolute top-4 left-4 z-20 flex gap-2">
+                                    <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">${data.language}</span>
+                                    <span class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">${data.type}</span>
+                                </div>
+                                
+                                <div class="absolute bottom-[-14px] left-5 z-30 flex items-center gap-1.5 bg-[#172033] px-3 py-1.5 rounded-xl border border-white/5 shadow-lg">
+                                    <i class="fa-solid fa-star text-yellow-400 text-sm"></i>
+                                    <span class="text-white font-extrabold text-sm">${avgR}</span>
+                                    <span class="text-gray-400 text-xs">(${data.reviewCount || 0} Ulasan)</span>
+                                </div>
+                            </div>
+                            
+                            <div class="px-5 pt-8 flex flex-col flex-grow relative z-20">
+                                <h3 class="text-lg font-bold text-white mb-2 line-clamp-2 uppercase tracking-wide leading-tight">${data.title}</h3>
+                                <p class="text-xs text-emerald-500 mb-4 font-medium"><i class="fa-solid fa-code-branch mr-1.5"></i>Author: <span class="text-gray-300">${data.author}</span></p>
+                                
+                                <p class="text-[13px] text-textMuted mb-6 line-clamp-2 flex-grow leading-relaxed">${data.description}</p>
+                                
+                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                    <a href="${data.downloadLink}" target="_blank" class="flex justify-center items-center bg-emerald-500 hover:bg-emerald-400 text-[#0b1120] font-bold py-2.5 rounded-xl text-sm transition-colors"><i class="fa-solid fa-download mr-2"></i>Unduh</a>
+                                    <button onclick="openReviewModal('${data.id}', 'scripts')" class="flex justify-center items-center bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl text-sm transition-colors border border-white/5"><i class="fa-regular fa-star mr-2"></i>Ulas</button>
+                                </div>
+                                <button onclick="showGallery('${pStr}')" class="w-full flex justify-center items-center bg-transparent border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 font-bold py-2.5 rounded-xl text-sm transition-colors"><i class="fa-regular fa-image mr-2"></i>Preview</button>
+                            </div>
+                        </div>`;
+                });
             }
         }
 
-        // ---- RENDER HTML KARTU SCRIPT ----
-        function renderScripts(scriptsToRender) {
-            const container = document.getElementById('scriptsContainer');
-            const emptyState = document.getElementById('emptyState');
-            container.innerHTML = '';
+        // --- RENDER SNIPPETS ---
+        function renderSnippets(arr) {
+            const cont = document.getElementById('snippetsContainer'); cont.innerHTML = '';
+            arr.forEach(d => {
+                const id = 'code_' + d.id; 
+                const safe = d.code.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                const avgR = d.reviewCount > 0 ? (d.ratingSum / d.reviewCount).toFixed(1) : '0.0';
+                
+                // Menentukan class highlight.js berdasarkan tipe modul
+                let langClass = "language-javascript";
+                if(d.type === "JSON/Config") langClass = "language-json";
 
-            if (scriptsToRender.length === 0) {
-                emptyState.classList.remove('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-                scriptsToRender.forEach((data) => {
-                    const imgSrc = (data.images && data.images.length > 0) ? data.images[0] : 'https://placehold.co/600x300/1e293b/10b981?text=Karya+Keren';
-                    const avgRating = data.reviewCount > 0 ? (data.ratingSum / data.reviewCount).toFixed(1) : '0.0';
+                cont.innerHTML += `
+                    <div class="glass-card p-5 rounded-[24px] border border-white/5 flex flex-col h-full relative">
+                        <!-- ADMIN DELETE BUTTON -->
+                        <button onclick="deleteData('snippets', '${d.id}')" class="admin-only-btn absolute top-4 right-4 z-50 bg-rose-500 hover:bg-rose-400 text-white w-8 h-8 rounded-full shadow-lg flex items-center justify-center transition-colors"><i class="fa-solid fa-trash text-sm"></i></button>
 
-                    const card = document.createElement('div');
-                    card.className = "glass-card rounded-3xl overflow-hidden hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/15 transition-all duration-300 flex flex-col h-full group relative"; 
-                    
-                    card.innerHTML = `
-                        <div class="relative w-full h-48 overflow-hidden bg-slate-800">
-                            <div class="absolute inset-0 bg-gradient-to-t from-appBg to-transparent z-10"></div>
-                            <img src="${imgSrc}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Cover">
-                            
-                            <div class="absolute top-4 left-4 z-20 flex gap-2">
-                                <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold tracking-wide shadow-lg">${data.language}</span>
-                                <span class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold tracking-wide shadow-lg">${data.type}</span>
-                            </div>
+                        <div class="flex justify-between items-start mb-2 pr-10">
+                            <h4 class="font-bold text-white text-lg line-clamp-1">${d.title}</h4>
+                        </div>
+                        <div class="flex gap-2 items-center mb-3">
+                            <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-md font-semibold tracking-wide uppercase">${d.type}</span>
+                            <span class="text-[10px] text-yellow-400"><i class="fa-solid fa-star mr-1"></i>${avgR} (${d.reviewCount || 0})</span>
+                        </div>
+                        <p class="text-xs text-emerald-500 mb-4 font-medium"><i class="fa-solid fa-user-pen mr-1.5"></i>Author: <span class="text-gray-300">${d.author || 'Anonymous'}</span></p>
+                        
+                        <div class="bg-[#1e1e1e] p-3 rounded-xl border border-white/5 mb-5 flex-grow relative group overflow-hidden">
+                            <pre><code class="${langClass} text-[11px] font-mono rounded-lg" id="${id}">${safe}</code></pre>
+                            <div class="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#1e1e1e] to-transparent pointer-events-none"></div>
                         </div>
                         
-                        <div class="p-6 flex flex-col flex-grow relative z-20 -mt-12">
-                            
-                            <div class="flex items-center gap-1.5 bg-slate-900/90 w-fit px-3 py-1.5 rounded-xl border border-white/10 mb-4 shadow-lg backdrop-blur-md">
-                                <i class="fa-solid fa-star text-yellow-400 text-sm"></i>
-                                <span class="text-white font-bold text-sm">${avgRating}</span>
-                                <span class="text-gray-400 text-xs ml-1">(${data.reviewCount || 0} Ulasan)</span>
-                            </div>
-
-                            <h3 class="text-xl md:text-2xl font-extrabold text-white mb-1 line-clamp-1 group-hover:text-emerald-400 transition-colors">${data.title}</h3>
-                            <p class="text-xs font-medium text-emerald-500 mb-4"><i class="fa-solid fa-code-branch mr-1"></i> Author: <span class="text-gray-300">${data.author}</span></p>
-                            
-                            <p class="text-sm text-textMuted mb-6 line-clamp-3 flex-grow leading-relaxed">${data.description}</p>
-                            
-                            <div class="grid grid-cols-2 gap-3 mt-auto">
-                                <a href="${data.downloadLink}" target="_blank" class="flex justify-center items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-appBg font-bold py-3 rounded-xl transition-all text-sm shadow-lg shadow-emerald-500/20">
-                                    <i class="fa-solid fa-download"></i> Unduh
-                                </a>
-                                <button onclick="openReviewModal('${data.id}')" class="flex justify-center items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition-all text-sm border border-white/10 shadow-lg">
-                                    <i class="fa-regular fa-star"></i> Ulas
-                                </button>
-                            </div>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button onclick="copyCode('${id}')" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2 rounded-xl transition-colors" title="Salin"><i class="fa-regular fa-copy"></i></button>
+                            <button onclick="testSnippet('${id}')" class="border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 text-xs font-bold py-2 rounded-xl transition-colors" title="Run/Test"><i class="fa-solid fa-play"></i></button>
+                            <button onclick="editSnippet('${d.id}', '${d.title.replace(/'/g,"\\'").replace(/"/g,"&quot;")}', '${d.type}', '${(d.author||'').replace(/'/g,"\\'").replace(/"/g,"&quot;")}', '${id}')" class="border border-amber-500/30 text-amber-400 hover:bg-amber-500/10 text-xs font-bold py-2 rounded-xl transition-colors" title="Revisi/Edit"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="openReviewModal('${d.id}', 'snippets')" class="bg-emerald-500 hover:bg-emerald-400 text-[#0b1120] text-xs font-bold py-2 rounded-xl transition-colors" title="Ulas"><i class="fa-regular fa-star"></i></button>
                         </div>
-                    `;
-                    container.appendChild(card);
-                });
-            }
-        }
-
-        // FUNGSI FILTER BERLAPIS
-        function applyFilters() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const category = document.getElementById('categorySelect').value;
-            const language = document.getElementById('languageSelect').value;
-            const sortBy = document.getElementById('sortSelect').value;
-
-            let filtered = allScripts.filter(script => {
-                const matchName = (script.title && script.title.toLowerCase().includes(searchTerm)) || 
-                                  (script.author && script.author.toLowerCase().includes(searchTerm));
-                return matchName;
+                    </div>`;
             });
-
-            if (category !== 'all') filtered = filtered.filter(script => script.type === category);
-            if (language !== 'all') filtered = filtered.filter(script => script.language === language);
-
-            if (sortBy === 'newest') {
-                filtered.sort((a, b) => b.createdAt - a.createdAt);
-            } else if (sortBy === 'az') {
-                filtered.sort((a, b) => a.title.localeCompare(b.title));
-            } else if (sortBy === 'highest_rating') {
-                filtered.sort((a, b) => {
-                    const ratingA = a.reviewCount > 0 ? (a.ratingSum / a.reviewCount) : 0;
-                    const ratingB = b.reviewCount > 0 ? (b.ratingSum / b.reviewCount) : 0;
-                    return ratingB - ratingA;
-                });
-            }
-
-            renderScripts(filtered);
+            // Terapkan Syntax Highlighting pada block code baru
+            document.querySelectorAll('pre code').forEach((block) => { hljs.highlightElement(block); });
         }
 
-        // ---- SISTEM REVIEW ----
-        async function openReviewModal(scriptId) {
-            document.getElementById('currentScriptIdForReview').value = scriptId;
+        // --- SORT & FILTER ---
+        function applyFilters() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const cat = document.getElementById('categorySelect').value;
+            const lang = document.getElementById('languageSelect').value;
+            const sort = document.getElementById('sortSelect').value;
+            
+            let f = allScripts.filter(s => (s.title.toLowerCase().includes(q) || s.author.toLowerCase().includes(q)));
+            if(cat !== 'all') f = f.filter(s => s.type === cat);
+            if(lang !== 'all') f = f.filter(s => s.language === lang);
+
+            if(sort === 'newest') f.sort((a,b) => (b.createdAt?.toMillis()||0) - (a.createdAt?.toMillis()||0));
+            else if(sort === 'oldest') f.sort((a,b) => (a.createdAt?.toMillis()||0) - (b.createdAt?.toMillis()||0));
+            else if(sort === 'az') f.sort((a,b) => a.title.localeCompare(b.title));
+            else if(sort === 'za') f.sort((a,b) => b.title.localeCompare(a.title));
+            else if(sort === 'highest_rating') f.sort((a,b) => ((b.ratingSum/b.reviewCount)||0) - ((a.ratingSum/a.reviewCount)||0));
+            else if(sort === 'lowest_rating') f.sort((a,b) => ((a.ratingSum/a.reviewCount)||0) - ((b.ratingSum/b.reviewCount)||0));
+
+            renderScripts(f);
+        }
+
+        function applySnippetFilters() {
+            const q = document.getElementById('snippetSearchInput').value.toLowerCase();
+            let f = allSnippets.filter(s => (s.title.toLowerCase().includes(q) || (s.author||'').toLowerCase().includes(q)));
+            f.sort((a,b) => (b.createdAt?.toMillis()||0) - (a.createdAt?.toMillis()||0)); // default newest
+            renderSnippets(f);
+        }
+
+        // --- REVIEW UNTUK SCRIPT & SNIPPET ---
+        async function openReviewModal(itemId, collectionType) {
+            document.getElementById('currentReviewId').value = itemId;
+            document.getElementById('currentReviewCollection').value = collectionType;
             openModal('reviewModal');
             
-            const listContainer = document.getElementById('reviewsList');
-            listContainer.innerHTML = '<div class="flex flex-col items-center justify-center py-10"><i class="fa-solid fa-circle-notch fa-spin text-emerald-500 text-3xl mb-3"></i><p class="text-sm text-gray-400">Memuat Ulasan...</p></div>';
-            
+            const lc = document.getElementById('reviewsList'); lc.innerHTML = 'Memuat...';
             try {
-                const snapshot = await db.collection('scripts').doc(scriptId).collection('reviews').orderBy('createdAt', 'desc').get();
-                listContainer.innerHTML = '';
-                
-                if (snapshot.empty) {
-                    listContainer.innerHTML = '<div class="text-center text-sm text-gray-500 py-6 border border-white/5 rounded-xl border-dashed">Jadilah orang pertama yang memberikan ulasan!</div>';
-                } else {
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        let starsHtml = '';
-                        for(let i=0; i<5; i++) {
-                            starsHtml += `<i class="fa-solid fa-star ${i < data.rating ? 'text-yellow-400' : 'text-slate-700'} text-sm"></i>`;
-                        }
-                        
-                        let imagesHtml = '';
-                        if(data.images && data.images.length > 0) {
-                            imagesHtml = '<div class="flex gap-2 mt-3">';
-                            data.images.forEach(img => {
-                                imagesHtml += `<a href="${img}" target="_blank"><img src="${img}" class="w-16 h-16 rounded-xl object-cover border border-white/10 hover:scale-105 transition-transform shadow-lg"></a>`;
-                            });
-                            imagesHtml += '</div>';
-                        }
-
-                        listContainer.innerHTML += `
-                            <div class="bg-slate-800/40 p-4 rounded-2xl border border-white/5 mb-3">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="font-bold text-white text-sm">${data.name}</span>
-                                    <div class="flex gap-1">${starsHtml}</div>
-                                </div>
-                                <p class="text-sm text-gray-400 leading-relaxed">${data.text}</p>
-                                ${imagesHtml}
-                            </div>
-                        `;
-                    });
-                }
-            } catch (error) {
-                listContainer.innerHTML = '<div class="text-center text-sm text-rose-500 py-4">Gagal memuat ulasan.</div>';
-            }
+                const snap = await db.collection(collectionType).doc(itemId).collection('reviews').orderBy('createdAt', 'desc').get();
+                lc.innerHTML = snap.empty ? '<p class="text-xs text-gray-500">Belum ada ulasan.</p>' : '';
+                snap.forEach(doc => {
+                    const d = doc.data(); let sHtml = ''; for(let i=0;i<5;i++) sHtml += `<i class="fa-solid fa-star ${i<d.rating?'text-yellow-400':'text-slate-700'} text-xs"></i>`;
+                    lc.innerHTML += `<div class="bg-slate-800/40 p-3 rounded-xl mb-2"><div class="flex justify-between"><span class="font-bold text-white text-xs">${d.name}</span><div class="flex gap-1">${sHtml}</div></div><p class="text-xs text-gray-400 mt-1">${d.text}</p></div>`;
+                });
+            } catch(e) { lc.innerHTML = 'Gagal memuat ulasan.'; }
         }
 
-        const addReviewForm = document.getElementById('addReviewForm');
-        addReviewForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const btn = document.getElementById('submitReviewBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Mengirim...';
-            btn.disabled = true;
-
+        document.getElementById('addReviewForm').addEventListener('submit', async(e) => {
+            e.preventDefault(); const btn = document.getElementById('submitReviewBtn'); btn.disabled=true; btn.innerText="Memproses...";
             try {
-                const scriptId = document.getElementById('currentScriptIdForReview').value;
-                const rating = parseInt(document.querySelector('input[name="rating"]:checked').value);
-                const name = document.getElementById('reviewerName').value;
-                const text = document.getElementById('reviewText').value;
+                const itemId = document.getElementById('currentReviewId').value;
+                const collType = document.getElementById('currentReviewCollection').value;
+                const r = parseInt(document.querySelector('input[name="rating"]:checked').value);
                 
-                let imageUrls = [];
-                // Upload gambar pakai ImgBB
-                if (reviewFiles.length > 0) {
-                    const uploadPromises = reviewFiles.map(file => uploadToImgbb(file));
-                    imageUrls = await Promise.all(uploadPromises);
-                }
-
-                await db.collection('scripts').doc(scriptId).collection('reviews').add({
-                    name: name,
-                    rating: rating,
-                    text: text,
-                    images: imageUrls,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                await db.collection('scripts').doc(scriptId).update({
-                    reviewCount: firebase.firestore.FieldValue.increment(1),
-                    ratingSum: firebase.firestore.FieldValue.increment(rating)
-                });
-
-                showToast("Terima kasih atas ulasanmu!", "success");
-                addReviewForm.reset();
-                document.getElementById('reviewImagesPreview').innerHTML = '';
-                reviewFiles = [];
+                await db.collection(collType).doc(itemId).collection('reviews').add({ name: document.getElementById('reviewerName').value, rating: r, text: document.getElementById('reviewText').value, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                await db.collection(collType).doc(itemId).update({ reviewCount: firebase.firestore.FieldValue.increment(1), ratingSum: firebase.firestore.FieldValue.increment(r) });
                 
-                loadScripts(); 
-                openReviewModal(scriptId); 
-            } catch (error) {
-                console.error(error);
-                showToast("Gagal mengirim ulasan.", "error");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
+                showToast("Ulasan terkirim!"); document.getElementById('addReviewForm').reset(); loadData(); openReviewModal(itemId, collType);
+            } catch(e) {} finally { btn.disabled=false; btn.innerText="Kirim Ulasan"; }
         });
 
-        window.onload = () => {
-            loadScripts();
-        };
     </script>
 </body>
 </html>
