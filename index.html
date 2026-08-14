@@ -70,8 +70,11 @@
         
         .terminal-output { background-color: #000; color: #00ff00; font-family: 'Fira Code', monospace; padding: 10px; border-radius: 8px; height: 150px; overflow-y: auto; font-size: 12px; }
 
-        /* Fitur Admin Delete - Disembunyikan secara default */
         body:not(.admin-mode) .admin-only-btn { display: none !important; }
+
+        /* Smooth tab scroll di HP */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col relative">
@@ -81,8 +84,10 @@
         <div class="absolute top-[20%] right-[-10%] w-80 h-80 bg-teal-500/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000 hardware-accelerated"></div>
     </div>
 
+    <!-- NAVBAR HEADER -->
     <header class="border-b border-white/5 bg-appBg/90 backdrop-blur-xl sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+            <!-- Bagian Kiri: Logo -->
             <div class="flex items-center gap-3 cursor-pointer group" onclick="switchTab('scripts')">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
                     <i class="fa-solid fa-code text-lg"></i>
@@ -93,33 +98,50 @@
                 </div>
             </div>
             
-            <div class="flex items-center gap-4">
-                <div class="hidden md:flex flex-col items-end text-xs font-mono mr-2 border-r border-white/10 pr-4">
-                    <span id="realtimeClock" class="text-gray-300">00:00:00</span>
+            <!-- Bagian Kanan: Indikator & Tombol -->
+            <div class="flex items-center gap-3 md:gap-4">
+                <div class="flex flex-col items-end text-[10px] md:text-xs font-mono mr-1 md:mr-2 border-r border-white/10 pr-3 md:pr-4">
+                    <span id="realtimeClock" class="text-gray-300">Senin, 00:00:00</span>
                     <span class="text-emerald-400 flex items-center gap-1.5 mt-0.5">
-                        <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
                         <span id="onlineCounter">124</span> Online
                     </span>
                 </div>
 
-                <div id="adminArea" class="hidden mr-2">
-                    <button onclick="openModal('adminModal')" class="bg-amber-500/20 text-amber-400 border border-amber-500/50 hover:bg-amber-500 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition-colors">
-                        <i class="fa-solid fa-crown mr-1"></i> Admin Panel
+                <div id="adminArea" class="hidden mr-1">
+                    <button onclick="openModal('adminModal')" class="bg-amber-500/20 text-amber-400 border border-amber-500/50 hover:bg-amber-500 hover:text-white px-2.5 py-1.5 rounded-lg text-[10px] md:text-xs font-bold transition-colors">
+                        <i class="fa-solid fa-crown md:mr-1"></i> <span class="hidden md:inline">Admin Panel</span>
                     </button>
                 </div>
 
-                <button id="mainActionBtn" onclick="openModal('addScriptModal')" class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white px-4 md:px-5 py-2 md:py-2.5 rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5 flex items-center gap-2 text-sm md:text-base">
+                <button id="mainActionBtn" onclick="openModal('addScriptModal')" class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white px-3 md:px-5 py-2 md:py-2.5 rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5 flex items-center gap-2 text-xs md:text-sm">
                     <i class="fa-solid fa-plus"></i> <span id="btnText">Upload Script</span>
                 </button>
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-1 overflow-x-auto whitespace-nowrap hide-scrollbar">
-            <div class="flex space-x-6">
-                <button onclick="switchTab('scripts')" id="tab-scripts" class="tab-active pb-3 text-sm transition-colors"><i class="fa-solid fa-folder-tree mr-1.5"></i>Scripts</button>
-                <button onclick="switchTab('snippets')" id="tab-snippets" class="tab-inactive pb-3 text-sm transition-colors"><i class="fa-solid fa-laptop-code mr-1.5"></i>Snippets</button>
-                <button onclick="switchTab('store')" id="tab-store" class="tab-inactive pb-3 text-sm transition-colors"><i class="fa-solid fa-shop mr-1.5"></i>Toko Panel</button>
-                <button onclick="switchTab('claim')" id="tab-claim" class="tab-inactive pb-3 text-sm transition-colors"><i class="fa-solid fa-shield-check mr-1.5"></i>Klaim Garansi</button>
+        <!-- TABS NAVIGASI -->
+        <div class="w-full overflow-x-auto whitespace-nowrap hide-scrollbar border-t border-white/5 mt-1">
+            <div class="max-w-7xl mx-auto flex px-4 sm:px-6 lg:px-8 w-max space-x-6">
+                <button onclick="switchTab('scripts')" id="tab-scripts" class="tab-active pt-3 pb-3 text-sm transition-colors flex items-center">
+                    <i class="fa-solid fa-folder-tree mr-1.5"></i>Scripts
+                </button>
+                <button onclick="switchTab('snippets')" id="tab-snippets" class="tab-inactive pt-3 pb-3 text-sm transition-colors flex items-center">
+                    <i class="fa-solid fa-laptop-code mr-1.5"></i>Snippets
+                </button>
+                <button onclick="switchTab('store')" id="tab-store" class="tab-inactive pt-3 pb-3 text-sm transition-colors flex items-center">
+                    <i class="fa-solid fa-shop mr-1.5"></i>Toko Panel
+                </button>
+                <button onclick="switchTab('claim')" id="tab-claim" class="tab-inactive pt-3 pb-3 text-sm transition-colors flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    Klaim Garansi
+                </button>
+                <div class="w-8 shrink-0"></div> <!-- Spacer untuk HP -->
             </div>
         </div>
     </header>
@@ -130,24 +152,21 @@
         <div id="section-scripts" class="block">
             <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div class="glass-card rounded-2xl p-5 shadow-xl flex flex-col gap-4">
-                    <!-- Baris 1: Pencarian -->
                     <div class="relative w-full">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="fa-solid fa-search text-gray-400"></i></div>
                         <input type="text" id="searchInput" oninput="applyFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm" placeholder="Cari nama script atau author...">
                     </div>
                     
-                    <!-- Baris 2: Filter & Urutkan -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <select id="categorySelect" onchange="applyFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <select id="categorySelect" onchange="applyFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl px-3 md:px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-xs md:text-sm">
                             <option value="all">Semua Kategori</option>
                             <option value="Bot WhatsApp">Bot WhatsApp</option><option value="Bot Telegram">Bot Telegram</option><option value="Bot Discord">Bot Discord</option><option value="Function">Function</option><option value="Base">Base</option><option value="Script Auto Order">Script Auto Order</option><option value="Monitoring">Monitoring</option>
                         </select>
-                        <select id="languageSelect" onchange="applyFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm">
+                        <select id="languageSelect" onchange="applyFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl px-3 md:px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-xs md:text-sm">
                             <option value="all">Semua Bahasa</option>
                             <option value="Node.js">Node.js</option><option value="Python">Python</option><option value="PHP">PHP</option><option value="JavaScript">JavaScript</option><option value="TypeScript">TypeScript</option><option value="Go">Go</option><option value="Java">Java</option><option value="C++">C++</option><option value="C#">C#</option><option value="Ruby">Ruby</option><option value="Rust">Rust</option><option value="Shell">Shell</option><option value="HTML/CSS">HTML/CSS</option><option value="Dart">Dart</option><option value="Kotlin">Kotlin</option><option value="Swift">Swift</option><option value="SQL">SQL</option><option value="Lua">Lua</option>
                         </select>
-                        <!-- Urutan Lengkap -->
-                        <select id="sortSelect" onchange="applyFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm text-emerald-400 font-semibold">
+                        <select id="sortSelect" onchange="applyFilters()" class="w-full col-span-2 md:col-span-1 bg-slate-900/60 border border-white/5 rounded-xl px-3 md:px-4 py-3 text-emerald-400 focus:outline-none focus:border-emerald-500 text-xs md:text-sm font-semibold">
                             <option value="newest">Terbaru</option>
                             <option value="oldest">Terlama</option>
                             <option value="highest_rating">Rating Tertinggi</option>
@@ -166,9 +185,11 @@
                         <p class="animate-pulse font-medium">Memuat koleksi script...</p>
                     </div>
                 </div>
+                <!-- HANTU KOSONG -->
                 <div id="emptyState" class="hidden text-center py-24 text-gray-400">
-                    <i class="fa-solid fa-ghost text-4xl text-slate-500 mb-4 animate-bounce"></i>
-                    <p class="text-sm">Belum ada script yang cocok.</p>
+                    <i class="fa-solid fa-ghost text-5xl text-slate-500 mb-4 animate-bounce"></i>
+                    <h3 class="text-xl font-bold text-white mb-2">Sepi Amat...</h3>
+                    <p class="text-sm text-gray-400">Belum ada script yang cocok dengan pencarianmu nih.</p>
                 </div>
             </section>
         </div>
@@ -176,14 +197,40 @@
         <!-- =================== SECTION: SNIPPETS =================== -->
         <div id="section-snippets" class="hidden">
             <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div class="glass-card rounded-2xl p-4 shadow-xl flex flex-col md:flex-row gap-3 items-center justify-between mb-8">
+                <div class="glass-card rounded-2xl p-5 shadow-xl flex flex-col gap-4 mb-8">
                     <div class="relative w-full">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="fa-solid fa-search text-gray-400"></i></div>
                         <input type="text" id="snippetSearchInput" oninput="applySnippetFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm" placeholder="Cari kode snippets atau author...">
                     </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <select id="snippetTypeSelect" onchange="applySnippetFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-emerald-500 text-xs md:text-sm">
+                            <option value="all">Semua Modul</option>
+                            <option value="Modul CJS">Modul CJS</option><option value="Modul ESM">Modul ESM</option><option value="JSON/Config">JSON / Config</option><option value="Regex/Utils">Regex / Utils</option>
+                        </select>
+                        <select id="snippetSortSelect" onchange="applySnippetFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl px-3 py-3 text-emerald-400 focus:outline-none focus:border-emerald-500 text-xs md:text-sm font-semibold">
+                            <option value="newest">Terbaru</option>
+                            <option value="oldest">Terlama</option>
+                            <option value="highest_rating">Rating Tertinggi</option>
+                            <option value="lowest_rating">Rating Terendah</option>
+                            <option value="az">Abjad (A - Z)</option>
+                            <option value="za">Abjad (Z - A)</option>
+                        </select>
+                    </div>
                 </div>
+
                 <div id="snippetsContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20">
-                    <!-- Dinamis via JS -->
+                    <div class="col-span-full text-center py-20 text-gray-400" id="loadingSnippetState">
+                        <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-4 text-emerald-500"></i>
+                        <p class="animate-pulse font-medium">Memuat snippets...</p>
+                    </div>
+                </div>
+                
+                <!-- HANTU SNIPPET -->
+                <div id="emptySnippetState" class="hidden text-center py-24 text-gray-400">
+                    <i class="fa-solid fa-ghost text-5xl text-slate-500 mb-4 animate-bounce"></i>
+                    <h3 class="text-xl font-bold text-white mb-2">Snippets Kosong</h3>
+                    <p class="text-sm">Waduh, belum ada snippet nih. Jadilah yang pertama membagikan kodemu!</p>
                 </div>
             </section>
         </div>
@@ -216,15 +263,17 @@
 
         <!-- =================== SECTION: KLAIM GARANSI =================== -->
         <div id="section-claim" class="hidden">
-            <section class="w-full max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 pb-24">
-                <div class="glass-card rounded-[32px] p-6 md:p-10 shadow-2xl relative overflow-hidden text-center border border-white/10">
+            <section class="w-full max-w-xl mx-auto px-4 sm:px-6 py-10 md:py-16 pb-24">
+                <div class="glass-card rounded-[32px] p-6 md:p-10 shadow-2xl relative overflow-hidden text-center border border-white/10 mx-2 md:mx-0">
                     
-                    <div class="mx-auto w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/30">
-                        <i class="fa-solid fa-shield-halved text-4xl text-white"></i>
+                    <div class="mx-auto w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/30 relative z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
                     </div>
                     
                     <h2 class="text-2xl font-extrabold text-white mb-2 relative z-10">Klaim Garansi Panel</h2>
-                    <p class="text-gray-400 text-sm mb-8 relative z-10">Masukkan kode garansi (INV-XXX) yang diberikan oleh Admin. <span class="text-rose-400">Hanya berlaku 5 Hari!</span></p>
+                    <p class="text-gray-400 text-sm mb-8 relative z-10">Masukkan kode garansi (INV-XXX) yang diberikan oleh Admin. <span class="text-rose-400 font-bold">Hanya berlaku 5 Hari!</span></p>
                     
                     <form id="claimWarrantyForm" class="space-y-5 relative z-10 text-left">
                         <div>
@@ -272,7 +321,7 @@
     <!-- MODAL ADMIN PANEL -->
     <div id="adminModal" class="fixed inset-0 z-[80] hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeModal('adminModal')"></div>
-        <div class="relative glass-card border border-amber-500/30 w-full max-w-md rounded-3xl shadow-2xl shadow-amber-500/10 p-6 transform scale-95 opacity-0 transition-all duration-300">
+        <div class="relative glass-card border border-amber-500/30 w-full max-w-md rounded-3xl shadow-2xl shadow-amber-500/10 p-6 transform scale-95 opacity-0 transition-all duration-300" id="adminModalContent">
             <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
                 <h3 class="text-xl font-extrabold text-amber-400"><i class="fa-solid fa-crown mr-2"></i>Admin Area</h3>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -291,7 +340,7 @@
         </div>
     </div>
 
-    <!-- MODAL: CHECKOUT PANEL / ROLE -->
+    <!-- MODAL: CHECKOUT PANEL / ROLE (BOX INVOICE TELAH DIKEMBALIKAN) -->
     <div id="checkoutModal" class="fixed inset-0 z-[70] hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeModal('checkoutModal')"></div>
         <div class="relative glass-card border border-white/10 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-6 transform scale-95 opacity-0 transition-all duration-300 custom-scroll" id="checkoutModalContent">
@@ -307,8 +356,16 @@
                 <p id="coSubtitle" class="text-xs text-emerald-400 bg-emerald-500/10 inline-block px-2 py-1 rounded-md">Harga: Rp 0</p>
             </div>
 
-            <div id="coDetails" class="bg-slate-900/50 p-4 rounded-xl mb-4 text-xs text-gray-300 border border-white/5 space-y-2.5"></div>
+            <!-- INI BAGIAN KODE GARANSI YANG KEMARIN HILANG -->
+            <div id="invoiceBox" class="bg-slate-950/50 p-3 rounded-xl border border-dashed border-gray-600 mb-4 flex justify-between items-center cursor-pointer hover:bg-slate-800 transition-colors" onclick="copyInvoice()">
+                <div>
+                    <p class="text-[10px] text-gray-500 uppercase">Kode Struk/Garansi:</p>
+                    <p id="coInvoice" class="text-sm font-mono text-cyan-400 font-bold">INV-XXXXXX</p>
+                </div>
+                <i class="fa-regular fa-copy text-gray-400 text-sm"></i>
+            </div>
 
+            <div id="coDetails" class="bg-slate-900/50 p-4 rounded-xl mb-4 text-xs text-gray-300 border border-white/5 space-y-2.5"></div>
             <div id="coRulesBox" class="bg-rose-500/10 p-3 rounded-xl border border-rose-500/20 mb-5 text-[11px] text-rose-200"></div>
 
             <a id="waCheckoutBtn" href="#" target="_blank" class="flex justify-center items-center w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-xl transition-all shadow-lg text-sm">
@@ -386,7 +443,7 @@
         </div>
     </div>
 
-    <!-- MODAL: TAMBAH SNIPPET (Lengkap) -->
+    <!-- MODAL: TAMBAH SNIPPET -->
     <div id="addSnippetModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md" onclick="closeModal('addSnippetModal')"></div>
         <div class="relative glass-card border border-white/10 w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 custom-scroll" id="addSnippetModalContent">
@@ -400,11 +457,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="text-xs font-bold text-gray-400 uppercase">Judul Snippet</label>
-                        <input type="text" id="snipTitle" required class="w-full mt-1 bg-slate-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:border-emerald-500 text-sm" placeholder="Misal: Auto Download FB">
+                        <input type="text" id="snipTitle" required class="w-full mt-1 bg-slate-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:border-emerald-500 text-sm">
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-400 uppercase">Author</label>
-                        <input type="text" id="snipAuthor" required class="w-full mt-1 bg-slate-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:border-emerald-500 text-sm" placeholder="Nama Kamu">
+                        <input type="text" id="snipAuthor" required class="w-full mt-1 bg-slate-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:border-emerald-500 text-sm">
                     </div>
                 </div>
 
@@ -420,7 +477,7 @@
 
                 <div>
                     <label class="text-xs font-bold text-gray-400 uppercase">Kode Snippet</label>
-                    <textarea id="snipCode" required rows="8" class="w-full mt-1 bg-[#1e1e1e] font-mono border border-white/10 rounded-xl px-4 py-3 text-emerald-400 focus:border-emerald-500 text-xs resize-none" placeholder="Masukkan kode di sini..."></textarea>
+                    <textarea id="snipCode" required rows="8" class="w-full mt-1 bg-[#1e1e1e] font-mono border border-white/10 rounded-xl px-4 py-3 text-emerald-400 focus:border-emerald-500 text-xs resize-none"></textarea>
                 </div>
 
                 <button type="submit" id="submitSnipBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
@@ -456,7 +513,7 @@
         </div>
     </div>
 
-    <!-- MODAL: REVIEW (Untuk Script & Snippet) -->
+    <!-- MODAL: REVIEW -->
     <div id="reviewModal" class="fixed inset-0 z-[60] hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeModal('reviewModal')"></div>
         <div class="relative glass-card border border-white/10 w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 custom-scroll" id="reviewModalContent">
@@ -493,8 +550,17 @@
 
     <!-- UI & LOGIC JAVASCRIPT -->
     <script>
-        // --- JAM & TAB ---
-        setInterval(() => { document.getElementById('realtimeClock').innerText = new Date().toLocaleTimeString('id-ID'); }, 1000);
+        // --- JAM & HARI ---
+        function updateClock() {
+            const now = new Date();
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const dayName = days[now.getDay()];
+            const timeString = now.toLocaleTimeString('id-ID');
+            document.getElementById('realtimeClock').innerText = `${dayName}, ${timeString}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
         document.getElementById('onlineCounter').innerText = Math.floor(Math.random() * 100) + 50;
         setInterval(() => {
             const current = parseInt(document.getElementById('onlineCounter').innerText);
@@ -504,10 +570,10 @@
         function switchTab(tabId) {
             ['scripts', 'snippets', 'store', 'claim'].forEach(id => {
                 document.getElementById('section-' + id).classList.add('hidden');
-                document.getElementById('tab-' + id).className = 'tab-inactive pb-3 text-sm transition-colors';
+                document.getElementById('tab-' + id).className = 'tab-inactive pt-3 pb-3 text-sm transition-colors flex items-center';
             });
             document.getElementById('section-' + tabId).classList.remove('hidden');
-            document.getElementById('tab-' + tabId).className = 'tab-active pb-3 text-sm transition-colors';
+            document.getElementById('tab-' + tabId).className = 'tab-active pt-3 pb-3 text-sm transition-colors flex items-center';
             
             const btn = document.getElementById('mainActionBtn');
             if(tabId === 'scripts') { 
@@ -536,51 +602,50 @@
 
         function openCheckout(type, name, limitOrDisk, durationOrRam, price) {
             const invCode = 'INV-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-            document.getElementById('coInvoice').innerText = invCode;
+            
+            // KEMBALIKAN ELEMEN INVOICE YANG HILANG SEBELUMNYA DI SINI!
+            const invoiceEl = document.getElementById('coInvoice');
+            if(invoiceEl) invoiceEl.innerText = invCode;
+            
             document.getElementById('coTitle').innerText = name;
             document.getElementById('coSubtitle').innerText = `Rp ${price.toLocaleString('id-ID')}`;
-            
             const details = document.getElementById('coDetails');
             const rules = document.getElementById('coRulesBox');
-            let messageText = `Halo Kyno, saya mau beli ${type === 'panel' ? 'Panel' : 'Role'} *${name}*\n*Kode Garansi:* ${invCode}\n_Saya akan sertakan bukti pembayaran setelah ini._`;
+            const invoiceBox = document.getElementById('invoiceBox');
+            
+            let messageText = `Halo Kyno, saya mau beli ${type === 'panel' ? 'Panel' : 'Role'} *${name}*\n`;
 
             if(type === 'panel') {
+                messageText += `*Kode Garansi:* ${invCode}\n`;
                 document.getElementById('coIcon').innerHTML = '<i class="fa-solid fa-server"></i>'; document.getElementById('coIcon').className = "w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-2";
                 details.innerHTML = `<p><i class="fa-solid fa-memory text-emerald-500 w-5"></i> <strong>RAM:</strong> ${durationOrRam}</p><p><i class="fa-solid fa-hard-drive text-emerald-500 w-5"></i> <strong>Storage:</strong> ${limitOrDisk}</p>`;
                 rules.innerHTML = `<ul class="list-disc pl-4 space-y-1"><li><strong>Garansi 5 Hari</strong> wajib sertakan kode bukti di atas.</li><li>Dilarang Patungan (No PTPT).</li><li>Tema Reviactyl.</li></ul>`;
                 rules.classList.remove('hidden');
+                if(invoiceBox) { invoiceBox.classList.remove('hidden'); invoiceBox.classList.add('flex'); }
             } else {
                 document.getElementById('coIcon').innerHTML = '<i class="fa-solid fa-users-gear"></i>'; document.getElementById('coIcon').className = "w-14 h-14 bg-cyan-500/20 text-cyan-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-2";
                 details.innerHTML = `<p><i class="fa-solid fa-infinity text-cyan-500 w-5"></i> <strong>Limit Panel:</strong> ${limitOrDisk}</p><p><i class="fa-solid fa-clock text-cyan-500 w-5"></i> <strong>Durasi:</strong> ${durationOrRam}</p><div class="border-t border-white/5 pt-2 mt-2"><p class="text-[10px] text-gray-400">Spek Server: VPS R8 C4 (DO-Regular/Intel Premium).</p><p class="text-[10px] text-gray-400 mt-0.5">Benefit Tambahan: Masuk Grup CPanel Khusus.</p><p class="text-[10px] text-rose-400 mt-0.5 font-bold">Role tidak memiliki Garansi!</p></div>`;
                 rules.classList.add('hidden'); 
+                if(invoiceBox) { invoiceBox.classList.remove('flex'); invoiceBox.classList.add('hidden'); }
             }
+            messageText += `_Saya akan sertakan bukti pembayaran setelah ini._`;
             document.getElementById('waCheckoutBtn').href = `https://wa.me/6283834096675?text=${encodeURIComponent(messageText)}`;
             openModal('checkoutModal');
         }
+        function copyInvoice() { navigator.clipboard.writeText(document.getElementById('coInvoice').innerText); showToast("Kode Disalin!"); }
 
-        function copyInvoice() {
-            navigator.clipboard.writeText(document.getElementById('coInvoice').innerText); showToast("Kode Disalin!");
-        }
-
-        // --- GLOBAL MODAL & TOAST ---
         function openModal(modalId) { const m = document.getElementById(modalId); const c = document.getElementById(modalId + 'Content'); m.classList.remove('hidden'); m.classList.add('flex'); setTimeout(() => { c.classList.remove('scale-95', 'opacity-0'); c.classList.add('scale-100', 'opacity-100'); }, 10); }
         function closeModal(modalId) { const m = document.getElementById(modalId); const c = document.getElementById(modalId + 'Content'); c.classList.remove('scale-100', 'opacity-100'); c.classList.add('scale-95', 'opacity-0'); setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300); }
         function showToast(message, type = 'success') { const cont = document.getElementById('toastContainer'); const t = document.createElement('div'); const bg = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'; t.className = `flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl font-semibold text-sm text-white ${bg} border border-white/20 toast-enter pointer-events-auto`; t.innerHTML = `<span>${message}</span>`; cont.appendChild(t); requestAnimationFrame(() => { t.classList.remove('toast-enter'); t.classList.add('toast-enter-active'); }); setTimeout(() => { t.classList.add('toast-leave'); setTimeout(() => t.remove(), 300); }, 3000); }
 
-        // --- PREVIEWS ---
         let fileCover = null; let filePreviews = []; let claimImage = null;
         function previewCover(e) { const c = document.getElementById('coverPreviewContainer'); c.innerHTML = ''; if(e.target.files[0]) { fileCover = e.target.files[0]; const r = new FileReader(); r.onload = (ev) => c.innerHTML = `<img src="${ev.target.result}" class="w-16 h-16 object-cover rounded-lg border border-emerald-500/50">`; r.readAsDataURL(fileCover); } }
         function previewScreenshots(e) { const c = document.getElementById('screenshotsPreviewContainer'); c.innerHTML = ''; filePreviews = Array.from(e.target.files).slice(0, 3); filePreviews.forEach(f => { const r = new FileReader(); r.onload = (ev) => c.innerHTML += `<img src="${ev.target.result}" class="w-12 h-12 object-cover rounded-lg border border-cyan-500/50">`; r.readAsDataURL(f); }); }
         function previewClaimImage(e) { const c = document.getElementById('claimPreviewContainer'); c.innerHTML = ''; if(e.target.files[0]) { claimImage = e.target.files[0]; const r = new FileReader(); r.onload = (ev) => c.innerHTML = `<img src="${ev.target.result}" class="w-20 h-20 object-cover rounded-xl border-2 border-emerald-500/50 shadow-lg">`; r.readAsDataURL(claimImage); } }
         function showGallery(imagesStr) { const images = imagesStr ? imagesStr.split(',') : []; const c = document.getElementById('previewGallery'); c.innerHTML = ''; if(images.length === 0) c.innerHTML = '<p class="text-white text-center w-full">Preview kosong.</p>'; else images.forEach(img => c.innerHTML += `<img src="${img}" class="h-96 object-contain rounded-xl snap-center shrink-0 border border-white/10">`); openModal('viewPreviewModal'); }
 
-        // --- SNIPPET LOGIC ---
         function copyCode(codeId) { navigator.clipboard.writeText(document.getElementById(codeId).innerText); showToast("Kode disalin!"); }
-        function testSnippet(codeId) {
-            document.getElementById('hiddenCodeToRun').value = document.getElementById(codeId).innerText;
-            document.getElementById('terminalOutput').innerHTML = '<span class="text-gray-500">Terminal ready...</span><br>';
-            openModal('runSnippetModal');
-        }
+        function testSnippet(codeId) { document.getElementById('hiddenCodeToRun').value = document.getElementById(codeId).innerText; document.getElementById('terminalOutput').innerHTML = '<span class="text-gray-500">Terminal ready...</span><br>'; openModal('runSnippetModal'); }
         function executeCode() {
             const code = document.getElementById('hiddenCodeToRun').value; const term = document.getElementById('terminalOutput');
             term.innerHTML = '<span class="text-gray-500">Executing...</span><br>';
@@ -590,15 +655,8 @@
             console.log = origLog;
         }
 
-        // Revisi Snippet (Set ke modal dengan ID untuk update)
         function editSnippet(id, title, type, author, codeId) {
-            document.getElementById('editSnippetId').value = id;
-            document.getElementById('snipTitle').value = title;
-            document.getElementById('snipAuthor').value = author;
-            document.getElementById('snipType').value = type;
-            document.getElementById('snipCode').value = document.getElementById(codeId).innerText;
-            document.getElementById('snippetModalTitle').innerText = "Revisi Snippet";
-            openModal('addSnippetModal');
+            document.getElementById('editSnippetId').value = id; document.getElementById('snipTitle').value = title; document.getElementById('snipAuthor').value = author; document.getElementById('snipType').value = type; document.getElementById('snipCode').value = document.getElementById(codeId).innerText; document.getElementById('snippetModalTitle').innerText = "Revisi Snippet"; openModal('addSnippetModal');
         }
 
     </script>
@@ -615,14 +673,12 @@
         const imgbbApiKey = "3c1b551a0634329ac4b537b8b0db493c";
 
         let isAdmin = false;
-        // GANTI EMAIL INI DENGAN EMAIL GOOGLE KAMU!
         const ADMIN_EMAIL = "ryoga9753@gmail.com"; 
 
-        // --- AUTH ADMIN LOGIC ---
         auth.onAuthStateChanged(function(user) {
             if (user && user.email === ADMIN_EMAIL) {
                 isAdmin = true;
-                document.body.classList.add('admin-mode'); // Menampilkan tombol hapus
+                document.body.classList.add('admin-mode');
                 document.getElementById('adminArea').classList.remove('hidden');
                 document.getElementById('adminLoginBtn').classList.add('hidden');
                 document.getElementById('adminLogoutBtn').classList.remove('hidden');
@@ -644,7 +700,6 @@
         }
         function logoutAdmin() { auth.signOut(); showToast("Logged out."); }
 
-        // --- ADMIN GENERATE KODE GARANSI ---
         async function generateAdminWarranty() {
             const code = 'INV-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             const expiresAt = new Date(); expiresAt.setDate(expiresAt.getDate() + 5);
@@ -653,7 +708,6 @@
         }
         function copyGeneratedCode() { navigator.clipboard.writeText(document.getElementById('newCodeValue').innerText); showToast("Kode Disalin!"); }
 
-        // --- DELETE DATA (ADMIN ONLY) ---
         async function deleteData(collection, id) {
             if(!isAdmin) return;
             if(!confirm("Yakin ingin menghapus postingan ini secara permanen?")) return;
@@ -664,7 +718,6 @@
             } catch(e) { showToast("Gagal menghapus.", "error"); }
         }
 
-        // --- CLAIM WARRANTY CHECKER ---
         document.getElementById('claimWarrantyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitClaimBtn'); btn.disabled = true; btn.innerText = "Mengecek Kode...";
@@ -689,7 +742,6 @@
             } catch (err) { showToast("Terjadi kesalahan.", "error"); } finally { btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Permintaan Klaim`; btn.disabled = false; }
         });
 
-        // --- DATA LOGIC ---
         async function uploadToImgbb(file) {
             const fd = new FormData(); fd.append("image", file);
             const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, { method: "POST", body: fd });
@@ -742,11 +794,16 @@
                 allSnippets = []; qsSnip.forEach(d => allSnippets.push({ id: d.id, ...d.data() }));
                 
                 document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('loadingSnippetState').classList.add('hidden');
+                
                 applyFilters(); applySnippetFilters();
-            } catch (error) { document.getElementById('loadingState').innerHTML = `<p class="text-rose-400">Gagal terhubung database.</p>`; }
+            } catch (error) { 
+                document.getElementById('loadingState').innerHTML = `<p class="text-rose-400">Gagal terhubung database.</p>`; 
+                document.getElementById('loadingSnippetState').innerHTML = `<p class="text-rose-400">Gagal terhubung database.</p>`; 
+            }
         }
 
-        // --- RENDER SCRIPTS (CARD DESIGN SESUAI REFERENSI) ---
+        // --- RENDER SCRIPTS ---
         function renderScripts(arr) {
             const cont = document.getElementById('scriptsContainer'); const emp = document.getElementById('emptyState'); cont.innerHTML = '';
             if (arr.length === 0) emp.classList.remove('hidden'); else {
@@ -755,13 +812,15 @@
                     const imgSrc = data.cover || 'https://placehold.co/600x300/1e293b/10b981?text=No+Cover';
                     const avgR = data.reviewCount > 0 ? (data.ratingSum / data.reviewCount).toFixed(1) : '0.0';
                     const pStr = (data.previews && data.previews.length > 0) ? data.previews.join(',') : '';
+                    
                     cont.innerHTML += `
-                        <div class="glass-card rounded-[24px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/15 transition-all duration-300 flex flex-col h-full group relative pb-4">
+                        <div class="glass-card rounded-[24px] hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/15 transition-all duration-300 flex flex-col h-full group relative pb-4">
                             
                             <!-- ADMIN DELETE BUTTON -->
                             <button onclick="deleteData('scripts', '${data.id}')" class="admin-only-btn absolute top-3 right-3 z-50 bg-rose-500 hover:bg-rose-400 text-white w-8 h-8 rounded-full shadow-lg flex items-center justify-center transition-colors"><i class="fa-solid fa-trash text-sm"></i></button>
 
-                            <div class="relative w-full h-48 overflow-hidden bg-slate-800">
+                            <!-- Gambar Header -->
+                            <div class="relative w-full h-48 bg-slate-800 rounded-t-[24px] overflow-hidden shrink-0">
                                 <div class="absolute inset-0 bg-gradient-to-t from-[#1e293b] to-transparent z-10"></div>
                                 <img src="${imgSrc}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                                 
@@ -769,21 +828,24 @@
                                     <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">${data.language}</span>
                                     <span class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">${data.type}</span>
                                 </div>
-                                
-                                <div class="absolute bottom-[-14px] left-5 z-30 flex items-center gap-1.5 bg-[#172033] px-3 py-1.5 rounded-xl border border-white/5 shadow-lg">
-                                    <i class="fa-solid fa-star text-yellow-400 text-sm"></i>
-                                    <span class="text-white font-extrabold text-sm">${avgR}</span>
-                                    <span class="text-gray-400 text-xs">(${data.reviewCount || 0} Ulasan)</span>
-                                </div>
                             </div>
                             
-                            <div class="px-5 pt-8 flex flex-col flex-grow relative z-20">
-                                <h3 class="text-lg font-bold text-white mb-2 line-clamp-2 uppercase tracking-wide leading-tight">${data.title}</h3>
+                            <!-- Konten Body -->
+                            <div class="px-5 pb-5 pt-6 flex flex-col flex-grow relative z-20 bg-[#1e293b] rounded-b-[24px]">
+                                
+                                <!-- Box Rating Melayang -->
+                                <div class="absolute -top-5 left-5 flex items-center gap-1.5 bg-[#0f172a] px-3 py-1.5 rounded-xl border border-white/10 shadow-lg z-30">
+                                    <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+                                    <span class="text-white font-extrabold text-sm">${avgR}</span>
+                                    <span class="text-gray-400 text-[10px] whitespace-nowrap">(${data.reviewCount || 0} Ulasan)</span>
+                                </div>
+
+                                <h3 class="text-lg font-bold text-white mt-2 mb-1 line-clamp-2 uppercase tracking-wide leading-tight">${data.title}</h3>
                                 <p class="text-xs text-emerald-500 mb-4 font-medium"><i class="fa-solid fa-code-branch mr-1.5"></i>Author: <span class="text-gray-300">${data.author}</span></p>
                                 
                                 <p class="text-[13px] text-textMuted mb-6 line-clamp-2 flex-grow leading-relaxed">${data.description}</p>
                                 
-                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                <div class="grid grid-cols-2 gap-3 mb-3 mt-auto">
                                     <a href="${data.downloadLink}" target="_blank" class="flex justify-center items-center bg-emerald-500 hover:bg-emerald-400 text-[#0b1120] font-bold py-2.5 rounded-xl text-sm transition-colors"><i class="fa-solid fa-download mr-2"></i>Unduh</a>
                                     <button onclick="openReviewModal('${data.id}', 'scripts')" class="flex justify-center items-center bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl text-sm transition-colors border border-white/5"><i class="fa-regular fa-star mr-2"></i>Ulas</button>
                                 </div>
@@ -796,45 +858,49 @@
 
         // --- RENDER SNIPPETS ---
         function renderSnippets(arr) {
-            const cont = document.getElementById('snippetsContainer'); cont.innerHTML = '';
-            arr.forEach(d => {
-                const id = 'code_' + d.id; 
-                const safe = d.code.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                const avgR = d.reviewCount > 0 ? (d.ratingSum / d.reviewCount).toFixed(1) : '0.0';
-                
-                // Menentukan class highlight.js berdasarkan tipe modul
-                let langClass = "language-javascript";
-                if(d.type === "JSON/Config") langClass = "language-json";
+            const cont = document.getElementById('snippetsContainer'); const emp = document.getElementById('emptySnippetState'); cont.innerHTML = '';
+            
+            if (arr.length === 0) {
+                emp.classList.remove('hidden');
+            } else {
+                emp.classList.add('hidden');
+                arr.forEach(d => {
+                    const id = 'code_' + d.id; 
+                    const safe = d.code.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    const avgR = d.reviewCount > 0 ? (d.ratingSum / d.reviewCount).toFixed(1) : '0.0';
+                    
+                    let langClass = "language-javascript";
+                    if(d.type === "JSON/Config") langClass = "language-json";
 
-                cont.innerHTML += `
-                    <div class="glass-card p-5 rounded-[24px] border border-white/5 flex flex-col h-full relative">
-                        <!-- ADMIN DELETE BUTTON -->
-                        <button onclick="deleteData('snippets', '${d.id}')" class="admin-only-btn absolute top-4 right-4 z-50 bg-rose-500 hover:bg-rose-400 text-white w-8 h-8 rounded-full shadow-lg flex items-center justify-center transition-colors"><i class="fa-solid fa-trash text-sm"></i></button>
+                    cont.innerHTML += `
+                        <div class="glass-card p-5 rounded-[24px] border border-white/5 flex flex-col h-full relative">
+                            <!-- ADMIN DELETE BUTTON -->
+                            <button onclick="deleteData('snippets', '${d.id}')" class="admin-only-btn absolute top-4 right-4 z-50 bg-rose-500 hover:bg-rose-400 text-white w-8 h-8 rounded-full shadow-lg flex items-center justify-center transition-colors"><i class="fa-solid fa-trash text-sm"></i></button>
 
-                        <div class="flex justify-between items-start mb-2 pr-10">
-                            <h4 class="font-bold text-white text-lg line-clamp-1">${d.title}</h4>
-                        </div>
-                        <div class="flex gap-2 items-center mb-3">
-                            <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-md font-semibold tracking-wide uppercase">${d.type}</span>
-                            <span class="text-[10px] text-yellow-400"><i class="fa-solid fa-star mr-1"></i>${avgR} (${d.reviewCount || 0})</span>
-                        </div>
-                        <p class="text-xs text-emerald-500 mb-4 font-medium"><i class="fa-solid fa-user-pen mr-1.5"></i>Author: <span class="text-gray-300">${d.author || 'Anonymous'}</span></p>
-                        
-                        <div class="bg-[#1e1e1e] p-3 rounded-xl border border-white/5 mb-5 flex-grow relative group overflow-hidden">
-                            <pre><code class="${langClass} text-[11px] font-mono rounded-lg" id="${id}">${safe}</code></pre>
-                            <div class="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#1e1e1e] to-transparent pointer-events-none"></div>
-                        </div>
-                        
-                        <div class="grid grid-cols-4 gap-2">
-                            <button onclick="copyCode('${id}')" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2 rounded-xl transition-colors" title="Salin"><i class="fa-regular fa-copy"></i></button>
-                            <button onclick="testSnippet('${id}')" class="border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 text-xs font-bold py-2 rounded-xl transition-colors" title="Run/Test"><i class="fa-solid fa-play"></i></button>
-                            <button onclick="editSnippet('${d.id}', '${d.title.replace(/'/g,"\\'").replace(/"/g,"&quot;")}', '${d.type}', '${(d.author||'').replace(/'/g,"\\'").replace(/"/g,"&quot;")}', '${id}')" class="border border-amber-500/30 text-amber-400 hover:bg-amber-500/10 text-xs font-bold py-2 rounded-xl transition-colors" title="Revisi/Edit"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="openReviewModal('${d.id}', 'snippets')" class="bg-emerald-500 hover:bg-emerald-400 text-[#0b1120] text-xs font-bold py-2 rounded-xl transition-colors" title="Ulas"><i class="fa-regular fa-star"></i></button>
-                        </div>
-                    </div>`;
-            });
-            // Terapkan Syntax Highlighting pada block code baru
-            document.querySelectorAll('pre code').forEach((block) => { hljs.highlightElement(block); });
+                            <div class="flex justify-between items-start mb-2 pr-10">
+                                <h4 class="font-bold text-white text-lg line-clamp-1">${d.title}</h4>
+                            </div>
+                            <div class="flex gap-2 items-center mb-3">
+                                <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-md font-semibold tracking-wide uppercase">${d.type}</span>
+                                <span class="text-[10px] text-yellow-400 whitespace-nowrap"><i class="fa-solid fa-star mr-1"></i>${avgR} (${d.reviewCount || 0})</span>
+                            </div>
+                            <p class="text-xs text-emerald-500 mb-4 font-medium"><i class="fa-solid fa-user-pen mr-1.5"></i>Author: <span class="text-gray-300">${d.author || 'Anonymous'}</span></p>
+                            
+                            <div class="bg-[#1e1e1e] p-3 rounded-xl border border-white/5 mb-5 flex-grow relative group overflow-hidden">
+                                <pre><code class="${langClass} text-[11px] font-mono rounded-lg" id="${id}">${safe}</code></pre>
+                                <div class="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#1e1e1e] to-transparent pointer-events-none"></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-4 gap-2">
+                                <button onclick="copyCode('${id}')" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2 rounded-xl transition-colors" title="Salin"><i class="fa-regular fa-copy"></i></button>
+                                <button onclick="testSnippet('${id}')" class="border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 text-xs font-bold py-2 rounded-xl transition-colors" title="Run/Test"><i class="fa-solid fa-play"></i></button>
+                                <button onclick="editSnippet('${d.id}', '${d.title.replace(/'/g,"\\'").replace(/"/g,"&quot;")}', '${d.type}', '${(d.author||'').replace(/'/g,"\\'").replace(/"/g,"&quot;")}', '${id}')" class="border border-amber-500/30 text-amber-400 hover:bg-amber-500/10 text-xs font-bold py-2 rounded-xl transition-colors" title="Revisi/Edit"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="openReviewModal('${d.id}', 'snippets')" class="bg-emerald-500 hover:bg-emerald-400 text-[#0b1120] text-xs font-bold py-2 rounded-xl transition-colors" title="Ulas"><i class="fa-regular fa-star"></i></button>
+                            </div>
+                        </div>`;
+                });
+                document.querySelectorAll('pre code').forEach((block) => { hljs.highlightElement(block); });
+            }
         }
 
         // --- SORT & FILTER ---
@@ -860,8 +926,19 @@
 
         function applySnippetFilters() {
             const q = document.getElementById('snippetSearchInput').value.toLowerCase();
+            const type = document.getElementById('snippetTypeSelect').value;
+            const sort = document.getElementById('snippetSortSelect').value;
+            
             let f = allSnippets.filter(s => (s.title.toLowerCase().includes(q) || (s.author||'').toLowerCase().includes(q)));
-            f.sort((a,b) => (b.createdAt?.toMillis()||0) - (a.createdAt?.toMillis()||0)); // default newest
+            if(type !== 'all') f = f.filter(s => s.type === type);
+
+            if(sort === 'newest') f.sort((a,b) => (b.createdAt?.toMillis()||0) - (a.createdAt?.toMillis()||0));
+            else if(sort === 'oldest') f.sort((a,b) => (a.createdAt?.toMillis()||0) - (b.createdAt?.toMillis()||0));
+            else if(sort === 'az') f.sort((a,b) => a.title.localeCompare(b.title));
+            else if(sort === 'za') f.sort((a,b) => b.title.localeCompare(a.title));
+            else if(sort === 'highest_rating') f.sort((a,b) => ((b.ratingSum/b.reviewCount)||0) - ((a.ratingSum/a.reviewCount)||0));
+            else if(sort === 'lowest_rating') f.sort((a,b) => ((a.ratingSum/a.reviewCount)||0) - ((b.ratingSum/b.reviewCount)||0));
+
             renderSnippets(f);
         }
 
@@ -896,6 +973,7 @@
             } catch(e) {} finally { btn.disabled=false; btn.innerText="Kirim Ulasan"; }
         });
 
+        window.onload = loadData;
     </script>
 </body>
 </html>
