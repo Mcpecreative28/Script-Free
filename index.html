@@ -75,6 +75,8 @@
         /* Smooth tab scroll di HP */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .chat-container { height: calc(100vh - 200px); max-height: 600px; }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col relative">
@@ -112,8 +114,8 @@
                 </div>
 
                 <div id="adminArea" class="hidden mr-1">
-                    <button onclick="openModal('adminModal')" class="bg-amber-500/20 text-amber-400 border border-amber-500/50 hover:bg-amber-500 hover:text-white px-2.5 py-1.5 rounded-lg text-[10px] md:text-xs font-bold transition-colors">
-                        <i class="fa-solid fa-crown md:mr-1"></i> <span class="hidden md:inline">Admin Panel</span>
+                    <button onclick="openModal('adminModal')" class="bg-rose-500/20 text-rose-400 border border-rose-500/50 hover:bg-rose-500 hover:text-white px-2.5 py-1.5 rounded-lg text-[10px] md:text-xs font-bold transition-colors">
+                        <i class="fa-solid fa-crown md:mr-1"></i> <span class="hidden md:inline">Admin</span>
                     </button>
                 </div>
 
@@ -129,19 +131,19 @@
                 <button onclick="switchTab('scripts')" id="tab-scripts" class="tab-active pt-3 pb-3 text-sm transition-colors flex items-center">
                     <i class="fa-solid fa-folder-tree mr-1.5"></i>Scripts
                 </button>
+                <button onclick="switchTab('repo')" id="tab-repo" class="tab-inactive pt-3 pb-3 text-sm transition-colors flex items-center">
+                    <i class="fa-brands fa-github mr-1.5"></i>Baileys & Repo
+                </button>
                 <button onclick="switchTab('snippets')" id="tab-snippets" class="tab-inactive pt-3 pb-3 text-sm transition-colors flex items-center">
                     <i class="fa-solid fa-laptop-code mr-1.5"></i>Snippets
                 </button>
                 <button onclick="switchTab('store')" id="tab-store" class="tab-inactive pt-3 pb-3 text-sm transition-colors flex items-center">
-                    <i class="fa-solid fa-shop mr-1.5"></i>Toko Panel
+                    <i class="fa-solid fa-shop mr-1.5"></i>Toko Panel & VPS
                 </button>
-                <button onclick="switchTab('claim')" id="tab-claim" class="tab-inactive pt-3 pb-3 text-sm transition-colors flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                    Klaim Garansi
+                <button onclick="switchTab('chat')" id="tab-chat" class="tab-inactive pt-3 pb-3 text-sm transition-colors flex items-center">
+                    <i class="fa-solid fa-comments mr-1.5"></i>Public Room
                 </button>
-                <div class="w-8 shrink-0"></div> <!-- Spacer untuk HP -->
+                <div class="w-4 shrink-0"></div> <!-- Spacer -->
             </div>
         </div>
     </header>
@@ -160,7 +162,13 @@
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                         <select id="categorySelect" onchange="applyFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl px-3 md:px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-xs md:text-sm">
                             <option value="all">Semua Kategori</option>
-                            <option value="Bot WhatsApp">Bot WhatsApp</option><option value="Bot Telegram">Bot Telegram</option><option value="Bot Discord">Bot Discord</option><option value="Function">Function</option><option value="Base">Base</option><option value="Script Auto Order">Script Auto Order</option><option value="Monitoring">Monitoring</option>
+                            <option value="Bot WhatsApp">Bot WhatsApp</option>
+                            <option value="Bot Telegram">Bot Telegram</option>
+                            <option value="Bot Discord">Bot Discord</option>
+                            <option value="Function">Function</option>
+                            <option value="Base">Base</option>
+                            <option value="Script Auto Order">Script Auto Order</option>
+                            <option value="Monitoring">Monitoring</option>
                         </select>
                         <select id="languageSelect" onchange="applyFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl px-3 md:px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-xs md:text-sm">
                             <option value="all">Semua Bahasa</option>
@@ -185,11 +193,38 @@
                         <p class="animate-pulse font-medium">Memuat koleksi script...</p>
                     </div>
                 </div>
-                <!-- HANTU KOSONG -->
                 <div id="emptyState" class="hidden text-center py-24 text-gray-400">
                     <i class="fa-solid fa-ghost text-5xl text-slate-500 mb-4 animate-bounce"></i>
                     <h3 class="text-xl font-bold text-white mb-2">Sepi Amat...</h3>
                     <p class="text-sm text-gray-400">Belum ada script yang cocok dengan pencarianmu nih.</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- =================== SECTION: REPOSITORI GITHUB & BAILEYS =================== -->
+        <div id="section-repo" class="hidden">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="glass-card rounded-2xl p-5 shadow-xl flex flex-col gap-4 mb-4 text-center md:text-left">
+                    <h2 class="text-2xl font-bold text-white"><i class="fa-brands fa-github text-emerald-500 mr-2"></i> Repositori & Baileys</h2>
+                    <p class="text-sm text-gray-400">Tempat khusus untuk berbagi repositori Github, source code Base Bot, dan library Baileys terbaru untuk komunitas.</p>
+                </div>
+
+                <div class="relative w-full mb-6">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="fa-solid fa-search text-gray-400"></i></div>
+                    <input type="text" id="repoSearchInput" oninput="applyRepoFilters()" class="w-full bg-slate-900/60 border border-white/5 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm" placeholder="Cari repositori...">
+                </div>
+
+                <div id="repoContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+                    <div class="col-span-full text-center py-20 text-gray-400" id="loadingRepoState">
+                        <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-4 text-emerald-500"></i>
+                        <p class="animate-pulse font-medium">Memuat repositori...</p>
+                    </div>
+                </div>
+                
+                <div id="emptyRepoState" class="hidden text-center py-24 text-gray-400">
+                    <i class="fa-solid fa-ghost text-5xl text-slate-500 mb-4 animate-bounce"></i>
+                    <h3 class="text-xl font-bold text-white mb-2">Belum Ada Repositori</h3>
+                    <p class="text-sm text-gray-400">Yuk jadi yang pertama membagikan Repo Github / Baileys kamu!</p>
                 </div>
             </section>
         </div>
@@ -226,7 +261,6 @@
                     </div>
                 </div>
                 
-                <!-- HANTU SNIPPET -->
                 <div id="emptySnippetState" class="hidden text-center py-24 text-gray-400">
                     <i class="fa-solid fa-ghost text-5xl text-slate-500 mb-4 animate-bounce"></i>
                     <h3 class="text-xl font-bold text-white mb-2">Snippets Kosong</h3>
@@ -235,64 +269,121 @@
             </section>
         </div>
 
-        <!-- =================== SECTION: TOKO PANEL =================== -->
+        <!-- =================== SECTION: TOKO PANEL & VPS =================== -->
         <div id="section-store" class="hidden">
             <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-24">
                 <div class="text-center mb-10">
-                    <h2 class="text-3xl font-bold text-white mb-2">Toko Panel & Hosting</h2>
-                    <p class="text-gray-400 text-sm">Server VPS kencang, stabil, garansi terjamin untuk bot kesayanganmu.</p>
+                    <h2 class="text-3xl font-bold text-white mb-2">Toko Panel, Role & VPS</h2>
+                    <p class="text-gray-400 text-sm">Server VPS kencang, stabil, garansi terjamin untuk bot atau hosting mu</p>
+                </div>
+
+                <!-- VPS DIGITAL OCEAN -->
+                <div class="mb-12">
+                    <div class="flex items-center gap-3 mb-4 border-b border-white/10 pb-2">
+                        <i class="fa-solid fa-cloud text-indigo-400 text-xl"></i>
+                        <h3 class="text-xl font-bold text-white">VPS Digital Ocean</h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <!-- VPS LOW -->
+                        <div class="glass-card rounded-2xl p-5 border-t-4 border-emerald-500 hover:-translate-y-1 transition-transform cursor-pointer" onclick="openVpsModal('LOW')">
+                            <h4 class="text-lg font-bold text-white mb-1"><i class="fa-solid fa-server text-emerald-500 mr-2 text-sm"></i>VPS LOW</h4>
+                            <p class="text-xs text-emerald-400 font-semibold mb-4">Mulai Rp 10.000</p>
+                            <ul class="text-xs text-gray-300 space-y-2 mb-4 text-left pl-2">
+                                <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i> Garansi Error: 3 Hari</li>
+                                <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i> Garansi Suspend: 1 Hari</li>
+                                <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i> Replace: 1x</li>
+                            </ul>
+                            <button class="w-full bg-slate-800 hover:bg-emerald-500 hover:text-white text-emerald-400 font-bold py-2 rounded-xl text-xs transition-colors">Pilih Spesifikasi</button>
+                        </div>
+                        <!-- VPS MEDIUM -->
+                        <div class="glass-card rounded-2xl p-5 border-t-4 border-yellow-400 hover:-translate-y-1 transition-transform cursor-pointer" onclick="openVpsModal('MEDIUM')">
+                            <h4 class="text-lg font-bold text-white mb-1"><i class="fa-solid fa-server text-yellow-400 mr-2 text-sm"></i>VPS MEDIUM</h4>
+                            <p class="text-xs text-yellow-400 font-semibold mb-4">Mulai Rp 18.000</p>
+                            <ul class="text-xs text-gray-300 space-y-2 mb-4 text-left pl-2">
+                                <li><i class="fa-solid fa-check text-yellow-400 mr-2"></i> Garansi Error: 10 Hari</li>
+                                <li><i class="fa-solid fa-check text-yellow-400 mr-2"></i> Garansi Suspend: 3 Hari</li>
+                                <li><i class="fa-solid fa-check text-yellow-400 mr-2"></i> Replace: 2x</li>
+                            </ul>
+                            <button class="w-full bg-slate-800 hover:bg-yellow-400 hover:text-black text-yellow-400 font-bold py-2 rounded-xl text-xs transition-colors">Pilih Spesifikasi</button>
+                        </div>
+                        <!-- VPS HIGH -->
+                        <div class="glass-card rounded-2xl p-5 border-t-4 border-rose-500 hover:-translate-y-1 transition-transform cursor-pointer" onclick="openVpsModal('HIGH')">
+                            <h4 class="text-lg font-bold text-white mb-1"><i class="fa-solid fa-server text-rose-500 mr-2 text-sm"></i>VPS HIGH</h4>
+                            <p class="text-xs text-rose-400 font-semibold mb-4">Mulai Rp 23.000</p>
+                            <ul class="text-xs text-gray-300 space-y-2 mb-4 text-left pl-2">
+                                <li><i class="fa-solid fa-check text-rose-500 mr-2"></i> Garansi Error: 15 Hari</li>
+                                <li><i class="fa-solid fa-check text-rose-500 mr-2"></i> Garansi Suspend: 7 Hari</li>
+                                <li><i class="fa-solid fa-check text-rose-500 mr-2"></i> Replace: 3x</li>
+                            </ul>
+                            <button class="w-full bg-slate-800 hover:bg-rose-500 hover:text-white text-rose-400 font-bold py-2 rounded-xl text-xs transition-colors">Pilih Spesifikasi</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VPS NAT -->
+                <div class="mb-12">
+                    <div class="flex items-center gap-3 mb-4 border-b border-white/10 pb-2">
+                        <i class="fa-solid fa-network-wired text-cyan-500 text-xl"></i>
+                        <h3 class="text-xl font-bold text-white">VPS NAT</h3>
+                    </div>
+                    <div class="glass-card rounded-2xl p-5 border-t-4 border-cyan-500 hover:-translate-y-1 transition-transform cursor-pointer max-w-sm" onclick="openVpsNatModal()">
+                        <h4 class="text-lg font-bold text-white mb-1"><i class="fa-solid fa-network-wired text-cyan-500 mr-2 text-sm"></i>VPS NAT Khusus</h4>
+                        <p class="text-xs text-cyan-400 font-semibold mb-3">Harga Mulai Dari 5K</p>
+                        <p class="text-[11px] text-gray-300 mb-4 leading-relaxed text-left">Tersedia terus menerus. Sangat cocok untuk kebutuhan Web Hosting ringan dan semacamnya. <br><span class="text-rose-400 font-semibold mt-1 block">*Catatan: Tidak bisa Install Pterodactyl</span></p>
+                        <button class="w-full bg-slate-800 hover:bg-cyan-500 hover:text-white text-cyan-400 font-bold py-2 rounded-xl text-xs transition-colors">Pesan VPS NAT</button>
+                    </div>
                 </div>
                 
+                <!-- Kategori 1: PANEL -->
                 <div class="mb-10">
                     <div class="flex items-center gap-3 mb-4 border-b border-white/10 pb-2">
-                        <i class="fa-solid fa-server text-emerald-500 text-xl"></i>
+                        <i class="fa-solid fa-box text-emerald-500 text-xl"></i>
                         <h3 class="text-xl font-bold text-white">Beli Panel Pterodactyl</h3>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3" id="panelsContainer"></div>
                 </div>
 
+                <!-- Kategori 2: ROLE -->
                 <div>
                     <div class="flex items-center gap-3 mb-4 border-b border-white/10 pb-2">
-                        <i class="fa-solid fa-users-gear text-cyan-500 text-xl"></i>
-                        <h3 class="text-xl font-bold text-white">Beli Role (Akses Buat Panel)</h3>
+                        <i class="fa-solid fa-users-gear text-emerald-400 text-xl"></i>
+                        <h3 class="text-xl font-bold text-white">Beli Role Panel (Akses Buat Panel)</h3>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3" id="rolesContainer"></div>
                 </div>
             </section>
         </div>
 
-        <!-- =================== SECTION: KLAIM GARANSI =================== -->
-        <div id="section-claim" class="hidden">
-            <section class="w-full max-w-xl mx-auto px-4 sm:px-6 py-10 md:py-16 pb-24">
-                <div class="glass-card rounded-[32px] p-6 md:p-10 shadow-2xl relative overflow-hidden text-center border border-white/10 mx-2 md:mx-0">
-                    
-                    <div class="mx-auto w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/30 relative z-10">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
+        <!-- =================== SECTION: PUBLIC CHAT ROOM =================== -->
+        <div id="section-chat" class="hidden">
+            <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div class="glass-card rounded-[24px] flex flex-col chat-container border border-white/10 overflow-hidden shadow-2xl relative">
+                    <!-- Chat Header -->
+                    <div class="bg-slate-900/80 p-4 border-b border-white/5 flex justify-between items-center backdrop-blur-md z-10">
+                        <div>
+                            <h3 class="font-extrabold text-white text-lg"><i class="fa-solid fa-comments text-emerald-400 mr-2"></i>Public Room</h3>
+                            <p class="text-[10px] text-emerald-500"><i class="fa-solid fa-circle text-[8px] animate-pulse mr-1"></i>Live Chat Terbuka</p>
+                        </div>
+                        <div class="flex items-center gap-2 cursor-pointer bg-slate-800 px-3 py-1.5 rounded-lg hover:bg-slate-700 transition-colors" onclick="changeNickname()">
+                            <i class="fa-solid fa-user-astronaut text-gray-400"></i>
+                            <span class="text-xs font-bold text-emerald-400" id="chatNicknameDisplay">Memuat...</span>
+                            <i class="fa-solid fa-pen text-[10px] text-gray-500 ml-1"></i>
+                        </div>
                     </div>
-                    
-                    <h2 class="text-2xl font-extrabold text-white mb-2 relative z-10">Klaim Garansi Panel</h2>
-                    <p class="text-gray-400 text-sm mb-8 relative z-10">Masukkan kode garansi (INV-XXX) yang diberikan oleh Admin. <span class="text-rose-400 font-bold">Hanya berlaku 5 Hari!</span></p>
-                    
-                    <form id="claimWarrantyForm" class="space-y-5 relative z-10 text-left">
-                        <div>
-                            <label class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-1 block">Kode Struk/Garansi</label>
-                            <input type="text" id="claimCode" required class="w-full bg-slate-900/80 font-mono font-bold text-white border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-500 transition-all text-sm uppercase" placeholder="Contoh: INV-X1Y2Z3">
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-1 block">No WhatsApp / Telegram</label>
-                            <input type="text" id="claimContact" required class="w-full bg-slate-900/80 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all text-sm" placeholder="Contoh: 08123456789 atau @username">
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-1 block">Foto Bukti Kendala/Mati</label>
-                            <input type="file" id="claimImage" accept="image/*" required class="block w-full text-sm text-slate-400 file:mr-2 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20 cursor-pointer transition-colors" onchange="previewClaimImage(event)">
-                            <div id="claimPreviewContainer" class="mt-3 flex justify-center"></div>
-                        </div>
-                        <button type="submit" id="submitClaimBtn" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold py-4 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2 mt-4 text-base">
-                            <i class="fa-solid fa-paper-plane"></i> Kirim Permintaan Klaim
+
+                    <!-- Chat Messages Area -->
+                    <div id="chatBox" class="flex-grow p-4 overflow-y-auto space-y-4 custom-scroll bg-[#0b1120]/50 flex flex-col">
+                        <div class="text-center text-xs text-gray-500 my-4 bg-slate-900/50 py-2 rounded-lg border border-white/5">Selamat datang di Public Room! Gunakan bahasa yang sopan ya.</div>
+                        <!-- Messages will render here -->
+                    </div>
+
+                    <!-- Chat Input Area -->
+                    <div class="bg-slate-900/90 p-3 border-t border-white/5 flex gap-2 z-10">
+                        <input type="text" id="chatInput" class="flex-grow bg-slate-800/80 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm" placeholder="Ketik pesan..." onkeypress="handleChatEnter(event)">
+                        <button onclick="sendChatMessage()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-900 px-5 rounded-xl font-bold transition-transform active:scale-95">
+                            <i class="fa-solid fa-paper-plane"></i>
                         </button>
-                    </form>
+                    </div>
                 </div>
             </section>
         </div>
@@ -307,7 +398,7 @@
                 </div>
                 <span class="font-bold text-white text-lg">Kyno<span class="text-emerald-500">Dev</span></span>
             </div>
-            <p class="text-sm text-gray-400">Dibuat untuk Komunitas Bot.</p>
+            <p class="text-sm text-gray-400">Dibuat untuk Komunitas.</p>
             <div class="flex gap-4 items-center">
                 <button onclick="loginAdmin()" id="adminLoginBtn" class="text-gray-600 hover:text-emerald-500 transition-colors" title="Admin Login"><i class="fa-solid fa-key"></i></button>
                 <button onclick="logoutAdmin()" id="adminLogoutBtn" class="text-rose-500 hover:text-rose-400 transition-colors hidden" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
@@ -321,26 +412,18 @@
     <!-- MODAL ADMIN PANEL -->
     <div id="adminModal" class="fixed inset-0 z-[80] hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeModal('adminModal')"></div>
-        <div class="relative glass-card border border-amber-500/30 w-full max-w-md rounded-3xl shadow-2xl shadow-amber-500/10 p-6 transform scale-95 opacity-0 transition-all duration-300" id="adminModalContent">
+        <div class="relative glass-card border border-rose-500/30 w-full max-w-md rounded-3xl shadow-2xl shadow-rose-500/10 p-6 transform scale-95 opacity-0 transition-all duration-300" id="adminModalContent">
             <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                <h3 class="text-xl font-extrabold text-amber-400"><i class="fa-solid fa-crown mr-2"></i>Admin Area</h3>
+                <h3 class="text-xl font-extrabold text-rose-400"><i class="fa-solid fa-crown mr-2"></i>Admin Area</h3>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <div class="space-y-4">
-                <p class="text-sm text-gray-300">Buat kode garansi baru untuk pembeli Panel.</p>
-                <button onclick="generateAdminWarranty()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-ticket"></i> Cetak Kode Garansi (5 Hari)
-                </button>
-                <div id="generatedCodeDisplay" class="hidden bg-slate-900 p-4 rounded-xl border border-dashed border-amber-500/50 text-center mt-4 relative">
-                    <p class="text-[10px] text-gray-400 uppercase mb-1">Berikan kode ini ke pembeli:</p>
-                    <p id="newCodeValue" class="text-xl font-mono font-bold text-amber-400 tracking-wider">INV-XXXXXX</p>
-                    <button onclick="copyGeneratedCode()" class="mt-2 text-xs bg-slate-800 text-white px-3 py-1.5 rounded-lg hover:bg-slate-700">Salin Kode</button>
-                </div>
+                <p class="text-sm text-gray-300 leading-relaxed">Anda telah login sebagai <span class="font-bold text-white">Admin Kyno</span>. Sekarang Anda memiliki akses eksklusif untuk <span class="text-rose-400 font-bold">menghapus postingan</span> (Script / Repo / Snippet) yang tidak sesuai dengan mengklik ikon tong sampah merah pada kartu item.</p>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: CHECKOUT PANEL / ROLE (BOX INVOICE TELAH DIKEMBALIKAN) -->
+    <!-- MODAL: CHECKOUT PANEL / ROLE -->
     <div id="checkoutModal" class="fixed inset-0 z-[70] hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeModal('checkoutModal')"></div>
         <div class="relative glass-card border border-white/10 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-6 transform scale-95 opacity-0 transition-all duration-300 custom-scroll" id="checkoutModalContent">
@@ -356,25 +439,98 @@
                 <p id="coSubtitle" class="text-xs text-emerald-400 bg-emerald-500/10 inline-block px-2 py-1 rounded-md">Harga: Rp 0</p>
             </div>
 
-            <!-- INI BAGIAN KODE GARANSI YANG KEMARIN HILANG -->
-            <div id="invoiceBox" class="bg-slate-950/50 p-3 rounded-xl border border-dashed border-gray-600 mb-4 flex justify-between items-center cursor-pointer hover:bg-slate-800 transition-colors" onclick="copyInvoice()">
-                <div>
-                    <p class="text-[10px] text-gray-500 uppercase">Kode Struk/Garansi:</p>
-                    <p id="coInvoice" class="text-sm font-mono text-cyan-400 font-bold">INV-XXXXXX</p>
-                </div>
-                <i class="fa-regular fa-copy text-gray-400 text-sm"></i>
-            </div>
+            <div id="coDetails" class="bg-slate-900/50 p-4 rounded-xl mb-6 text-xs text-gray-300 border border-white/5 space-y-2.5 text-left"></div>
 
-            <div id="coDetails" class="bg-slate-900/50 p-4 rounded-xl mb-4 text-xs text-gray-300 border border-white/5 space-y-2.5"></div>
-            <div id="coRulesBox" class="bg-rose-500/10 p-3 rounded-xl border border-rose-500/20 mb-5 text-[11px] text-rose-200"></div>
-
-            <a id="waCheckoutBtn" href="#" target="_blank" class="flex justify-center items-center w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-xl transition-all shadow-lg text-sm">
+            <a id="waCheckoutBtn" href="#" target="_blank" class="flex justify-center items-center w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold py-3 rounded-xl transition-all shadow-lg text-sm">
                 <i class="fa-brands fa-whatsapp text-lg mr-2"></i> Pesan via WhatsApp
             </a>
         </div>
     </div>
 
-    <!-- MODAL: TAMBAH SCRIPT -->
+    <!-- MODAL: CHECKOUT VPS KHUSUS (LOW/MEDIUM/HIGH) -->
+    <div id="vpsModal" class="fixed inset-0 z-[75] hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeModal('vpsModal')"></div>
+        <div class="relative glass-card border border-white/10 w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-6 transform scale-95 opacity-0 transition-all duration-300 custom-scroll" id="vpsModalContent">
+            
+            <div class="flex justify-between items-center mb-4 border-b border-white/5 pb-3">
+                <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-cloud text-indigo-400 mr-2"></i>Konfigurasi VPS <span id="vpsTitleType" class="text-emerald-400"></span></h3>
+                <button onclick="closeModal('vpsModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form id="vpsOrderForm" class="space-y-4">
+                <input type="hidden" id="vpsTypeHidden">
+
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase mb-2 block"><i class="fa-solid fa-microchip mr-1.5"></i>1. Pilih Spesifikasi & CPU</label>
+                    <select id="vpsSpecSelect" onchange="updateVpsPrice()" class="w-full bg-slate-900/80 border border-white/10 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                        <!-- Diisi via JS -->
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase mb-2 block"><i class="fa-brands fa-linux mr-1.5"></i>2. Sistem Operasi (OS)</label>
+                    <select id="vpsOsSelect" onchange="updateVpsVersion()" class="w-full bg-slate-900/80 border border-white/10 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                        <option value="UBUNTU">Ubuntu</option>
+                        <option value="DEBIAN">Debian</option>
+                        <option value="FEDORA">Fedora</option>
+                        <option value="ALMALINUX">AlmaLinux</option>
+                        <option value="ROCKYLINUX">RockyLinux</option>
+                        <option value="CENTOS">CentOS</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase mb-2 block"><i class="fa-solid fa-code-compare mr-1.5"></i>3. Versi OS</label>
+                    <select id="vpsVersionSelect" class="w-full bg-slate-900/80 border border-white/10 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                        <option value="ubuntu-24-04-x64">Ubuntu 24.04 (LTS)</option>
+                        <option value="ubuntu-22-04-x64">Ubuntu 22.04 (LTS)</option>
+                        <option value="ubuntu-20-04-x64">Ubuntu 20.04 (LTS)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase mb-2 block"><i class="fa-solid fa-globe mr-1.5"></i>4. Region VPS</label>
+                    <select id="vpsRegionSelect" class="w-full bg-slate-900/80 border border-white/10 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                        <option value="sgp1">Singapore (SGP1)</option>
+                        <option value="syd1">Sydney (SYD1)</option>
+                        <option value="nyc1">New York (NYC1)</option>
+                        <option value="sfo2">San Francisco (SFO2)</option>
+                        <option value="ams3">Amsterdam (AMS3)</option>
+                        <option value="lon1">London (LON1)</option>
+                        <option value="fra1">Frankfurt (FRA1)</option>
+                        <option value="blr1">Bangalore (BLR1)</option>
+                        <option value="tor1">Toronto (TOR1)</option>
+                    </select>
+                </div>
+
+                <div class="bg-indigo-500/10 border border-indigo-500/20 p-4 rounded-xl flex justify-between items-center mt-2">
+                    <span class="text-sm text-gray-300 font-semibold">Total Harga:</span>
+                    <span id="vpsTotalPrice" class="text-lg font-bold text-indigo-400">Rp 0</span>
+                </div>
+
+                <button type="button" onclick="checkoutVps()" class="w-full bg-indigo-500 hover:bg-indigo-400 text-slate-900 font-bold py-3.5 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-sm mt-4">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> Konfirmasi & Pesan
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CHECKOUT VPS NAT -->
+    <div id="vpsNatModal" class="fixed inset-0 z-[75] hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeModal('vpsNatModal')"></div>
+        <div class="relative glass-card border border-white/10 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-6 transform scale-95 opacity-0 transition-all duration-300 custom-scroll" id="vpsNatModalContent">
+            <div class="flex justify-between items-center mb-4 border-b border-white/5 pb-3">
+                <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-network-wired text-cyan-400 mr-2"></i>Pesan VPS NAT</h3>
+                <button onclick="closeModal('vpsNatModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <p class="text-sm text-gray-300 mb-4 text-center leading-relaxed">Silakan hubungi Kyno secara langsung via WhatsApp untuk menanyakan spesifikasi dan stok VPS NAT yang tersedia saat ini.</p>
+            <a href="https://wa.me/6283834096675?text=Halo%20Kyno,%20saya%20tertarik%20untuk%20membeli%20VPS%20NAT.%20Apakah%20bisa%20minta%20list%20spesifikasi%20dan%20harganya?" target="_blank" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold py-3.5 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-sm">
+                <i class="fa-brands fa-whatsapp text-lg"></i> Chat via WhatsApp
+            </a>
+        </div>
+    </div>
+
+    <!-- MODAL: TAMBAH SCRIPT BIASA -->
     <div id="addScriptModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md" onclick="closeModal('addScriptModal')"></div>
         <div class="relative glass-card border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 custom-scroll" id="addScriptModalContent">
@@ -387,12 +543,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-slate-900/40 p-4 rounded-xl border border-white/5 text-center">
                         <label class="block text-xs font-semibold text-emerald-400 mb-2">1. Thumbnail Utama (1 Foto)</label>
-                        <input type="file" id="scriptCover" accept="image/*" class="block w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-500/10 file:text-emerald-400 cursor-pointer" onchange="previewCover(event)">
+                        <input type="file" id="scriptCover" accept="image/*" class="block w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-500/10 file:text-emerald-400 cursor-pointer" onchange="previewCover(event, 'coverPreviewContainer')">
                         <div id="coverPreviewContainer" class="mt-3 flex justify-center"></div>
                     </div>
                     <div class="bg-slate-900/40 p-4 rounded-xl border border-white/5 text-center">
                         <label class="block text-xs font-semibold text-cyan-400 mb-2">2. Foto Preview (Ops. Maks 3)</label>
-                        <input type="file" id="scriptPreviews" accept="image/*" multiple max="3" class="block w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-cyan-500/10 file:text-cyan-400 cursor-pointer" onchange="previewScreenshots(event)">
+                        <input type="file" id="scriptPreviews" accept="image/*" multiple max="3" class="block w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-cyan-500/10 file:text-cyan-400 cursor-pointer" onchange="previewScreenshots(event, 'screenshotsPreviewContainer')">
                         <div id="screenshotsPreviewContainer" class="mt-3 flex justify-center gap-2 flex-wrap"></div>
                     </div>
                 </div>
@@ -412,11 +568,17 @@
                     <div>
                         <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Kategori</label>
                         <select id="scriptType" class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm">
-                            <option value="Bot WhatsApp">Bot WhatsApp</option><option value="Bot Telegram">Bot Telegram</option><option value="Bot Discord">Bot Discord</option><option value="Function">Function</option><option value="Base">Base</option><option value="Script Auto Order">Script Auto Order</option><option value="Monitoring">Monitoring</option>
+                            <option value="Bot WhatsApp">Bot WhatsApp</option>
+                            <option value="Bot Telegram">Bot Telegram</option>
+                            <option value="Bot Discord">Bot Discord</option>
+                            <option value="Function">Function</option>
+                            <option value="Base">Base</option>
+                            <option value="Script Auto Order">Script Auto Order</option>
+                            <option value="Monitoring">Monitoring</option>
                         </select>
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Bahasa</label>
+                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Bahasa Utama</label>
                         <select id="scriptLang" class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm">
                             <option value="Node.js">Node.js</option><option value="Python">Python</option><option value="PHP">PHP</option><option value="JavaScript">JavaScript</option><option value="TypeScript">TypeScript</option><option value="Go">Go</option><option value="Java">Java</option><option value="C++">C++</option><option value="C#">C#</option><option value="Ruby">Ruby</option><option value="Rust">Rust</option><option value="Shell">Shell</option><option value="HTML/CSS">HTML/CSS</option><option value="Dart">Dart</option><option value="Kotlin">Kotlin</option><option value="Swift">Swift</option><option value="SQL">SQL</option><option value="Lua">Lua</option>
                         </select>
@@ -436,8 +598,64 @@
                     </div>
                 </div>
                 
-                <button type="submit" id="submitBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2">
+                <button type="submit" id="submitBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold py-3.5 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2">
                     <i class="fa-solid fa-paper-plane"></i> Upload Script
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: TAMBAH REPO KHUSUS -->
+    <div id="addRepoModal" class="fixed inset-0 z-[55] hidden items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md" onclick="closeModal('addRepoModal')"></div>
+        <div class="relative glass-card border border-white/10 w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 custom-scroll" id="addRepoModalContent">
+            <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                <h3 class="text-xl md:text-2xl font-extrabold text-white">Upload Repo & Baileys</h3>
+                <button onclick="closeModal('addRepoModal')" class="text-gray-400 hover:text-white transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <form id="addRepoForm" class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-900/40 p-4 rounded-xl border border-white/5 text-center">
+                        <label class="block text-xs font-semibold text-emerald-400 mb-2">1. Thumbnail (1 Foto)</label>
+                        <input type="file" id="repoCover" accept="image/*" class="block w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-500/10 file:text-emerald-400 cursor-pointer" onchange="previewCover(event, 'repoCoverPreview')">
+                        <div id="repoCoverPreview" class="mt-3 flex justify-center"></div>
+                    </div>
+                    <div class="bg-slate-900/40 p-4 rounded-xl border border-white/5 text-center">
+                        <label class="block text-xs font-semibold text-cyan-400 mb-2">2. Preview (Opsional)</label>
+                        <input type="file" id="repoPreviews" accept="image/*" multiple max="3" class="block w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-cyan-500/10 file:text-cyan-400 cursor-pointer" onchange="previewScreenshots(event, 'repoScreenshotsPreview')">
+                        <div id="repoScreenshotsPreview" class="mt-3 flex justify-center gap-2 flex-wrap"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Judul Repo / Nama Module</label>
+                    <input type="text" id="repoName" required class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm" placeholder="Misal: @whiskeysockets/baileys">
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Author</label>
+                    <input type="text" id="repoAuthor" required class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm" placeholder="Misal: zvx-team">
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Kategori</label>
+                    <select id="repoType" class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm">
+                        <option value="Baileys">Baileys</option>
+                        <option value="Repo Github">Repo Github</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Link Repositori <span class="text-emerald-400 lowercase">(GitHub/NPM)</span></label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500"><i class="fa-brands fa-github"></i></div>
+                        <input type="url" id="repoLink" required class="w-full bg-slate-900/60 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-rose-500 transition-all text-sm" placeholder="https://github.com/...">
+                    </div>
+                </div>
+                
+                <button type="submit" id="submitRepoBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold py-3.5 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload Repository
                 </button>
             </form>
         </div>
@@ -461,7 +679,7 @@
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-400 uppercase">Author</label>
-                        <input type="text" id="snipAuthor" required class="w-full mt-1 bg-slate-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:border-emerald-500 text-sm">
+                        <input type="text" id="snipAuthor" required class="w-full mt-1 bg-slate-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:border-emerald-500 text-sm" placeholder="Nama Kamu">
                     </div>
                 </div>
 
@@ -480,7 +698,7 @@
                     <textarea id="snipCode" required rows="8" class="w-full mt-1 bg-[#1e1e1e] font-mono border border-white/10 rounded-xl px-4 py-3 text-emerald-400 focus:border-emerald-500 text-xs resize-none"></textarea>
                 </div>
 
-                <button type="submit" id="submitSnipBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                <button type="submit" id="submitSnipBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold py-3 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
                     <i class="fa-solid fa-save"></i> Simpan Snippet
                 </button>
             </form>
@@ -539,7 +757,7 @@
                 <input type="hidden" id="currentReviewId">
                 <input type="hidden" id="currentReviewCollection">
                 
-                <button type="submit" id="submitReviewBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-xl text-sm transition-colors">
+                <button type="submit" id="submitReviewBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold py-3 rounded-xl text-sm transition-colors">
                     Kirim Ulasan
                 </button>
             </form>
@@ -568,24 +786,192 @@
         }, 15000);
 
         function switchTab(tabId) {
-            ['scripts', 'snippets', 'store', 'claim'].forEach(id => {
-                document.getElementById('section-' + id).classList.add('hidden');
-                document.getElementById('tab-' + id).className = 'tab-inactive pt-3 pb-3 text-sm transition-colors flex items-center';
+            ['scripts', 'snippets', 'store', 'repo', 'chat'].forEach(id => {
+                const sec = document.getElementById('section-' + id);
+                if(sec) sec.classList.add('hidden');
+                const tab = document.getElementById('tab-' + id);
+                if(tab) tab.className = 'tab-inactive pt-3 pb-3 mr-6 text-sm transition-colors flex items-center whitespace-nowrap';
             });
-            document.getElementById('section-' + tabId).classList.remove('hidden');
-            document.getElementById('tab-' + tabId).className = 'tab-active pt-3 pb-3 text-sm transition-colors flex items-center';
+            const secOn = document.getElementById('section-' + tabId);
+            if(secOn) secOn.classList.remove('hidden');
+            const activeTab = document.getElementById('tab-' + tabId);
+            if(activeTab) activeTab.className = 'tab-active pt-3 pb-3 mr-6 text-sm transition-colors flex items-center whitespace-nowrap';
             
             const btn = document.getElementById('mainActionBtn');
             if(tabId === 'scripts') { 
-                btn.classList.remove('hidden'); document.getElementById('btnText').innerText = "Upload Script"; 
-                btn.onclick = () => openModal('addScriptModal'); 
+                btn.classList.remove('hidden'); 
+                document.getElementById('btnText').innerText = "Upload Script"; 
+                btn.onclick = () => {
+                    document.getElementById('addScriptForm').reset();
+                    document.getElementById('coverPreviewContainer').innerHTML='';
+                    document.getElementById('screenshotsPreviewContainer').innerHTML='';
+                    fileCover = null; filePreviews = [];
+                    openModal('addScriptModal');
+                }; 
+            } else if (tabId === 'repo') { 
+                btn.classList.remove('hidden'); 
+                document.getElementById('btnText').innerText = "Upload Repo/Baileys"; 
+                btn.onclick = () => {
+                    document.getElementById('addRepoForm').reset();
+                    document.getElementById('repoCoverPreview').innerHTML='';
+                    document.getElementById('repoScreenshotsPreview').innerHTML='';
+                    fileCover = null; filePreviews = [];
+                    openModal('addRepoModal');
+                }; 
             } else if (tabId === 'snippets') { 
-                btn.classList.remove('hidden'); document.getElementById('btnText').innerText = "Buat Snippet"; 
-                btn.onclick = () => { document.getElementById('addSnippetForm').reset(); document.getElementById('editSnippetId').value=''; document.getElementById('snippetModalTitle').innerText="Bagikan Snippet"; openModal('addSnippetModal'); };
+                btn.classList.remove('hidden'); 
+                document.getElementById('btnText').innerText = "Buat Snippet"; 
+                btn.onclick = () => { 
+                    document.getElementById('addSnippetForm').reset(); 
+                    document.getElementById('editSnippetId').value=''; 
+                    document.getElementById('snippetModalTitle').innerText="Bagikan Snippet"; 
+                    openModal('addSnippetModal'); 
+                };
             } else { btn.classList.add('hidden'); }
         }
 
-        // --- TOKO PANEL & ROLE GENERATOR ---
+        // --- PUBLIC CHAT ROOM LOGIC ---
+        let chatNickname = localStorage.getItem('kyno_chat_nick');
+        if(!chatNickname) {
+            chatNickname = 'Guest_' + Math.floor(Math.random()*10000);
+            localStorage.setItem('kyno_chat_nick', chatNickname);
+        }
+        document.getElementById('chatNicknameDisplay').innerText = chatNickname;
+
+        function changeNickname() {
+            const newNick = prompt("Masukkan nama panggilan baru:", chatNickname);
+            if(newNick && newNick.trim().length > 0) {
+                chatNickname = newNick.trim();
+                localStorage.setItem('kyno_chat_nick', chatNickname);
+                document.getElementById('chatNicknameDisplay').innerText = chatNickname;
+            }
+        }
+
+        function handleChatEnter(e) {
+            if(e.key === 'Enter') sendChatMessage();
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if(!msg) return;
+            input.value = '';
+            
+            // MENGGUNAKAN SERVER TIMESTAMP FIRESTORE AGAR BERJALAN DENGAN BENAR (TIDAK DELAY)
+            db.collection("public_chat").add({
+                name: chatNickname,
+                text: msg,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(e => {
+                showToast("Gagal mengirim pesan", "error");
+            });
+        }
+
+        // --- TOKO PANEL & VPS GENERATOR ---
+        
+        const vpsCatalog = {
+            "LOW": { 
+                desc: "Garansi Suspend 1 Hari | Replace 1x", priceStr: "Rp 10.000",
+                specs: [
+                    { id: "2GB-Reg", name: "2GB 2 CPU | 60GB SSD | Regular", price: 10000, code: "2c2" },
+                    { id: "2GB-Reg", name: "2GB 2 CPU | 60GB SSD | Intel Prem", price: 11000, code: "2c2" },
+                    { id: "4GB-Reg", name: "4GB 2 CPU | 80GB SSD | Regular", price: 12000, code: "4c2" },
+                    { id: "4GB-Prem", name: "4GB 2 CPU | 80GB SSD | Intel Prem", price: 13000, code: "4c2" },
+                    { id: "8GB-Reg", name: "8GB 4 CPU | 160GB SSD | Regular", price: 13000, code: "8c4" },
+                    { id: "8GB-Prem", name: "8GB 4 CPU | 160GB SSD | Intel Prem", price: 15000, code: "8c4" },
+                    { id: "16GB-Xeon", name: "16GB 2 CPU | 60GB SSD | Xeon Platinum", price: 16000, code: "16c2" }
+                ]
+            },
+            "MEDIUM": { 
+                desc: "Garansi Suspend 3 Hari | Replace 2x", priceStr: "Rp 18.000",
+                specs: [
+                    { id: "2GB-Reg", name: "2GB 2 CPU | 60GB SSD | Regular", price: 18000, code: "2c2" },
+                    { id: "2GB-Reg", name: "2GB 2 CPU | 60GB SSD | Intel Prem", price: 19000, code: "2c2" },
+                    { id: "4GB-Reg", name: "4GB 2 CPU | 80GB SSD | Regular", price: 19000, code: "4c2" },
+                    { id: "4GB-Prem", name: "4GB 2 CPU | 80GB SSD | Intel Prem", price: 20000, code: "4c2" },
+                    { id: "8GB-Reg", name: "8GB 4 CPU | 160GB SSD | Regular", price: 20000, code: "8c4" },
+                    { id: "8GB-Prem", name: "8GB 4 CPU | 160GB SSD | Intel Prem", price: 22000, code: "8c4" },
+                    { id: "16GB-Xeon", name: "16GB 2 CPU | 60GB SSD | Xeon Platinum", price: 23000, code: "16c2" }
+                ]
+            },
+            "HIGH": { 
+                desc: "Garansi Suspend 7 Hari | Replace 3x", priceStr: "Rp 23.000",
+                specs: [
+                    { id: "2GB-Reg", name: "2GB 2 CPU | 60GB SSD | Regular", price: 23000, code: "2c2" },
+                    { id: "4GB-Reg", name: "4GB 2 CPU | 80GB SSD | Regular", price: 24000, code: "4c2" },
+                    { id: "4GB-Prem", name: "4GB 2 CPU | 80GB SSD | Intel Prem", price: 25000, code: "4c2" },
+                    { id: "8GB-Reg", name: "8GB 4 CPU | 160GB SSD | Regular", price: 25000, code: "8c4" },
+                    { id: "8GB-Prem", name: "8GB 4 CPU | 160GB SSD | Intel Prem", price: 28000, code: "8c4" },
+                    { id: "16GB-Xeon", name: "16GB 2 CPU | 60GB SSD | Xeon Platinum", price: 30000, code: "16c2" }
+                ]
+            }
+        };
+
+        function openVpsModal(type) {
+            document.getElementById('vpsTypeHidden').value = type;
+            document.getElementById('vpsTitleType').innerText = type;
+            
+            const specSelect = document.getElementById('vpsSpecSelect');
+            specSelect.innerHTML = '';
+            vpsCatalog[type].specs.forEach((s, idx) => {
+                specSelect.innerHTML += `<option value="${idx}" data-price="${s.price}">${s.name} - Rp ${s.price.toLocaleString('id-ID')}</option>`;
+            });
+            
+            updateVpsPrice();
+            updateVpsVersion(); 
+            openModal('vpsModal');
+        }
+
+        function updateVpsPrice() {
+            const select = document.getElementById('vpsSpecSelect');
+            const price = select.options[select.selectedIndex].getAttribute('data-price');
+            document.getElementById('vpsTotalPrice').innerText = `Rp ${parseInt(price).toLocaleString('id-ID')}`;
+        }
+
+        function updateVpsVersion() {
+            const os = document.getElementById('vpsOsSelect').value;
+            const vSelect = document.getElementById('vpsVersionSelect');
+            vSelect.innerHTML = '';
+            if(os === 'UBUNTU') {
+                vSelect.innerHTML = '<option value="ubuntu-24-04-x64">Ubuntu 24.04 (LTS)</option><option value="ubuntu-22-04-x64">Ubuntu 22.04 (LTS)</option><option value="ubuntu-20-04-x64">Ubuntu 20.04 (LTS)</option>';
+            } else if(os === 'DEBIAN') {
+                vSelect.innerHTML = '<option value="debian-13-x64">Debian 13</option><option value="debian-12-x64">Debian 12</option><option value="debian-11-x64">Debian 11</option><option value="debian-10-x64">Debian 10</option>';
+            } else if(os === 'FEDORA') {
+                vSelect.innerHTML = '<option value="fedora-42-x64">Fedora 42</option>';
+            } else if(os === 'ROCKYLINUX') {
+                vSelect.innerHTML = '<option value="rockylinux-9-x64">Rocky Linux 9</option><option value="rockylinux-8-x64">Rocky Linux 8</option>';
+            } else if(os === 'ALMALINUX') {
+                vSelect.innerHTML = '<option value="almalinux-9-x64">Alma Linux 9</option><option value="almalinux-8-x64">Alma Linux 8</option>';
+            } else if(os === 'CENTOS') {
+                vSelect.innerHTML = '<option value="centos-stream-9-x64">CentOS Stream 9</option><option value="centos-stream-8-x64">CentOS Stream 8</option>';
+            }
+        }
+
+        function checkoutVps() {
+            const type = document.getElementById('vpsTypeHidden').value;
+            const specIdx = document.getElementById('vpsSpecSelect').value;
+            const specData = vpsCatalog[type].specs[specIdx];
+            const osFam = document.getElementById('vpsOsSelect').value;
+            const osVer = document.getElementById('vpsVersionSelect').value;
+            const region = document.getElementById('vpsRegionSelect').value;
+            
+            const warr = type === 'LOW' ? '1 Hari' : (type === 'MEDIUM' ? '3 Hari' : '7 Hari');
+            const rep = type === 'LOW' ? '1x' : (type === 'MEDIUM' ? '2x' : '3x');
+            const cpuType = specData.name.split('|')[2].trim();
+            const specString = specData.name.split('|').slice(0,2).join('|').trim();
+
+            let msg = `*KONFIRMASI PEMESANAN VPS*\n━━━━━━━━━━━━━━━━━━━━━━\n`;
+            msg += `Paket: ${type}\nHarga: Rp ${specData.price.toLocaleString('id-ID')}\n\n`;
+            msg += `Garansi: ${warr}\nReplace: ${rep}\n\n`;
+            msg += `Spesifikasi:\n• ${specString}\n• CPU/RAM Code: ${specData.code}\n• Tipe CPU: ${cpuType}\n\n`;
+            msg += `OS Family: ${osFam}\nOS Version: ${osVer}\nRegion: ${region}\n`;
+            msg += `━━━━━━━━━━━━━━━━━━━━━━\n_Saya akan mengirimkan bukti transfer setelah pesan ini._`;
+
+            window.open(`https://wa.me/6283834096675?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function openVpsNatModal() { openModal('vpsNatModal'); }
+
         const panels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'UNLIMITED'];
         const pContainer = document.getElementById('panelsContainer');
         panels.forEach((p) => {
@@ -594,56 +980,42 @@
             pContainer.innerHTML += `<div class="glass-card rounded-xl p-3 hover:border-emerald-500/50 transition-colors text-center cursor-pointer" onclick="openCheckout('panel', '${name}', '${name}', '${name}', ${price})"><h4 class="font-bold text-white text-sm mb-0.5">${name}</h4><p class="text-[10px] text-emerald-500">Rp ${price/1000}K</p></div>`;
         });
 
-        const roleData = { "RESS": {limit: 5, dur: "7 Hari", p: 5000}, "PREM": {limit: 10, dur: "7 Hari", p: 10000}, "ADP": {limit: 15, dur: "14 Hari", p: 15000}, "PT": {limit: 20, dur: "14 Hari", p: 20000}, "TK": {limit: 25, dur: "14 Hari", p: 25000}, "CEO": {limit: 30, dur: "14 Hari", p: 30000}, "SECURITY": {limit: 35, dur: "14 Hari", p: 35000}, "SVIP": {limit: 40, dur: "14 Hari", p: 40000}, "DEV": {limit: 45, dur: "14 Hari", p: 45000}, "PEMILIK": {limit: 50, dur: "14 Hari", p: 50000}, "CO-FOUNDER": {limit: 60, dur: "14 Hari", p: 60000}, "KING": {limit: 100, dur: "14 Hari", p: 100000}, "FOUNDER": {limit: "UNLIMITED", dur: "Permanen", p: 150000} };
+        const roleData = { "RESS": {limit: 5, dur: "7 Hari", p: 2000}, "PREM": {limit: 10, dur: "7 Hari", p: 3000}, "ADP": {limit: 15, dur: "14 Hari", p: 5000}, "PT": {limit: 20, dur: "14 Hari", p: 7000}, "TK": {limit: 25, dur: "14 Hari", p: 9000}, "CEO": {limit: 30, dur: "14 Hari", p: 11000}, "SECURITY": {limit: 35, dur: "14 Hari", p: 13000}, "SVIP": {limit: 40, dur: "14 Hari", p: 15000}, "DEV": {limit: 45, dur: "14 Hari", p: 17000}, "PEMILIK": {limit: 50, dur: "14 Hari", p: 19000}, "CO-FOUNDER": {limit: 60, dur: "14 Hari", p: 20000}, "KING": {limit: 100, dur: "14 Hari", p: 23000}, "FOUNDER": {limit: "UNLIMITED", dur: "Permanen", p: 25000} };
         const rContainer = document.getElementById('rolesContainer');
         Object.keys(roleData).forEach(role => {
             rContainer.innerHTML += `<div class="glass-card rounded-xl p-3 hover:border-cyan-500/50 transition-colors text-center cursor-pointer" onclick="openCheckout('role', '${role}', '${roleData[role].limit}', '${roleData[role].dur}', ${roleData[role].p})"><h4 class="font-bold text-white text-sm mb-0.5">${role}</h4><p class="text-[10px] text-cyan-400">Rp ${roleData[role].p/1000}K</p></div>`;
         });
 
         function openCheckout(type, name, limitOrDisk, durationOrRam, price) {
-            const invCode = 'INV-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-            
-            // KEMBALIKAN ELEMEN INVOICE YANG HILANG SEBELUMNYA DI SINI!
-            const invoiceEl = document.getElementById('coInvoice');
-            if(invoiceEl) invoiceEl.innerText = invCode;
-            
             document.getElementById('coTitle').innerText = name;
             document.getElementById('coSubtitle').innerText = `Rp ${price.toLocaleString('id-ID')}`;
             const details = document.getElementById('coDetails');
-            const rules = document.getElementById('coRulesBox');
-            const invoiceBox = document.getElementById('invoiceBox');
             
-            let messageText = `Halo Kyno, saya mau beli ${type === 'panel' ? 'Panel' : 'Role'} *${name}*\n`;
+            let messageText = `Halo Kyno, saya mau beli ${type === 'panel' ? 'Panel' : 'Role'} *${name}*\n_Saya akan sertakan bukti pembayaran setelah ini._`;
 
             if(type === 'panel') {
-                messageText += `*Kode Garansi:* ${invCode}\n`;
                 document.getElementById('coIcon').innerHTML = '<i class="fa-solid fa-server"></i>'; document.getElementById('coIcon').className = "w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-2";
-                details.innerHTML = `<p><i class="fa-solid fa-memory text-emerald-500 w-5"></i> <strong>RAM:</strong> ${durationOrRam}</p><p><i class="fa-solid fa-hard-drive text-emerald-500 w-5"></i> <strong>Storage:</strong> ${limitOrDisk}</p>`;
-                rules.innerHTML = `<ul class="list-disc pl-4 space-y-1"><li><strong>Garansi 5 Hari</strong> wajib sertakan kode bukti di atas.</li><li>Dilarang Patungan (No PTPT).</li><li>Tema Reviactyl.</li></ul>`;
-                rules.classList.remove('hidden');
-                if(invoiceBox) { invoiceBox.classList.remove('hidden'); invoiceBox.classList.add('flex'); }
+                details.innerHTML = `<p><i class="fa-solid fa-memory text-emerald-500 w-5"></i> <strong>RAM:</strong> ${durationOrRam}</p><p><i class="fa-solid fa-hard-drive text-emerald-500 w-5"></i> <strong>Storage:</strong> ${limitOrDisk}</p><div class="border-t border-white/5 pt-2 mt-2"><p class="text-[10px] text-gray-400">Spek Server: VPS R8 C4 (DO-Regular/Intel Premium).</p></div>`;
             } else {
                 document.getElementById('coIcon').innerHTML = '<i class="fa-solid fa-users-gear"></i>'; document.getElementById('coIcon').className = "w-14 h-14 bg-cyan-500/20 text-cyan-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-2";
-                details.innerHTML = `<p><i class="fa-solid fa-infinity text-cyan-500 w-5"></i> <strong>Limit Panel:</strong> ${limitOrDisk}</p><p><i class="fa-solid fa-clock text-cyan-500 w-5"></i> <strong>Durasi:</strong> ${durationOrRam}</p><div class="border-t border-white/5 pt-2 mt-2"><p class="text-[10px] text-gray-400">Spek Server: VPS R8 C4 (DO-Regular/Intel Premium).</p><p class="text-[10px] text-gray-400 mt-0.5">Benefit Tambahan: Masuk Grup CPanel Khusus.</p><p class="text-[10px] text-rose-400 mt-0.5 font-bold">Role tidak memiliki Garansi!</p></div>`;
-                rules.classList.add('hidden'); 
-                if(invoiceBox) { invoiceBox.classList.remove('flex'); invoiceBox.classList.add('hidden'); }
+                details.innerHTML = `<p><i class="fa-solid fa-infinity text-cyan-500 w-5"></i> <strong>Limit Panel:</strong> ${limitOrDisk}</p><p><i class="fa-solid fa-clock text-cyan-500 w-5"></i> <strong>Durasi:</strong> ${durationOrRam}</p><div class="border-t border-white/5 pt-2 mt-2"><p class="text-[10px] text-gray-400">Spek Server: VPS R8 C4 (DO-Regular/Intel Premium).</p><p class="text-[10px] text-gray-400 mt-0.5">Benefit Tambahan: Masuk Grup CPanel Khusus.</p></div>`;
             }
-            messageText += `_Saya akan sertakan bukti pembayaran setelah ini._`;
             document.getElementById('waCheckoutBtn').href = `https://wa.me/6283834096675?text=${encodeURIComponent(messageText)}`;
             openModal('checkoutModal');
         }
-        function copyInvoice() { navigator.clipboard.writeText(document.getElementById('coInvoice').innerText); showToast("Kode Disalin!"); }
 
+        // --- GLOBAL MODAL & TOAST ---
         function openModal(modalId) { const m = document.getElementById(modalId); const c = document.getElementById(modalId + 'Content'); m.classList.remove('hidden'); m.classList.add('flex'); setTimeout(() => { c.classList.remove('scale-95', 'opacity-0'); c.classList.add('scale-100', 'opacity-100'); }, 10); }
         function closeModal(modalId) { const m = document.getElementById(modalId); const c = document.getElementById(modalId + 'Content'); c.classList.remove('scale-100', 'opacity-100'); c.classList.add('scale-95', 'opacity-0'); setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300); }
-        function showToast(message, type = 'success') { const cont = document.getElementById('toastContainer'); const t = document.createElement('div'); const bg = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'; t.className = `flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl font-semibold text-sm text-white ${bg} border border-white/20 toast-enter pointer-events-auto`; t.innerHTML = `<span>${message}</span>`; cont.appendChild(t); requestAnimationFrame(() => { t.classList.remove('toast-enter'); t.classList.add('toast-enter-active'); }); setTimeout(() => { t.classList.add('toast-leave'); setTimeout(() => t.remove(), 300); }, 3000); }
+        function showToast(message, type = 'success') { const cont = document.getElementById('toastContainer'); const t = document.createElement('div'); const bg = type === 'success' ? 'bg-emerald-500 border-emerald-400' : 'bg-rose-500 border-rose-400'; const icon = type === 'success' ? 'fa-check-circle' : 'fa-circle-exclamation'; t.className = `flex items-center gap-3 px-5 py-4 rounded-xl shadow-2xl shadow-black/50 font-semibold text-sm text-white ${bg} border toast-enter pointer-events-auto backdrop-blur-md`; t.innerHTML = `<i class="fa-solid ${icon} text-xl"></i><span>${message}</span>`; cont.appendChild(t); requestAnimationFrame(() => { t.classList.remove('toast-enter'); t.classList.add('toast-enter-active'); }); setTimeout(() => { t.classList.add('toast-leave'); setTimeout(() => t.remove(), 300); }, 3000); }
 
-        let fileCover = null; let filePreviews = []; let claimImage = null;
-        function previewCover(e) { const c = document.getElementById('coverPreviewContainer'); c.innerHTML = ''; if(e.target.files[0]) { fileCover = e.target.files[0]; const r = new FileReader(); r.onload = (ev) => c.innerHTML = `<img src="${ev.target.result}" class="w-16 h-16 object-cover rounded-lg border border-emerald-500/50">`; r.readAsDataURL(fileCover); } }
-        function previewScreenshots(e) { const c = document.getElementById('screenshotsPreviewContainer'); c.innerHTML = ''; filePreviews = Array.from(e.target.files).slice(0, 3); filePreviews.forEach(f => { const r = new FileReader(); r.onload = (ev) => c.innerHTML += `<img src="${ev.target.result}" class="w-12 h-12 object-cover rounded-lg border border-cyan-500/50">`; r.readAsDataURL(f); }); }
-        function previewClaimImage(e) { const c = document.getElementById('claimPreviewContainer'); c.innerHTML = ''; if(e.target.files[0]) { claimImage = e.target.files[0]; const r = new FileReader(); r.onload = (ev) => c.innerHTML = `<img src="${ev.target.result}" class="w-20 h-20 object-cover rounded-xl border-2 border-emerald-500/50 shadow-lg">`; r.readAsDataURL(claimImage); } }
+        // --- PREVIEWS ---
+        let fileCover = null; let filePreviews = []; 
+        function previewCover(e, containerId) { const c = document.getElementById(containerId); c.innerHTML = ''; if(e.target.files[0]) { fileCover = e.target.files[0]; const r = new FileReader(); r.onload = (ev) => c.innerHTML = `<img src="${ev.target.result}" class="w-16 h-16 object-cover rounded-lg border border-emerald-500/50">`; r.readAsDataURL(fileCover); } }
+        function previewScreenshots(e, containerId) { const c = document.getElementById(containerId); c.innerHTML = ''; filePreviews = Array.from(e.target.files).slice(0, 3); filePreviews.forEach(f => { const r = new FileReader(); r.onload = (ev) => c.innerHTML += `<img src="${ev.target.result}" class="w-12 h-12 object-cover rounded-lg border border-cyan-500/50">`; r.readAsDataURL(f); }); }
         function showGallery(imagesStr) { const images = imagesStr ? imagesStr.split(',') : []; const c = document.getElementById('previewGallery'); c.innerHTML = ''; if(images.length === 0) c.innerHTML = '<p class="text-white text-center w-full">Preview kosong.</p>'; else images.forEach(img => c.innerHTML += `<img src="${img}" class="h-96 object-contain rounded-xl snap-center shrink-0 border border-white/10">`); openModal('viewPreviewModal'); }
 
+        // --- SNIPPET LOGIC ---
         function copyCode(codeId) { navigator.clipboard.writeText(document.getElementById(codeId).innerText); showToast("Kode disalin!"); }
         function testSnippet(codeId) { document.getElementById('hiddenCodeToRun').value = document.getElementById(codeId).innerText; document.getElementById('terminalOutput').innerHTML = '<span class="text-gray-500">Terminal ready...</span><br>'; openModal('runSnippetModal'); }
         function executeCode() {
@@ -658,7 +1030,6 @@
         function editSnippet(id, title, type, author, codeId) {
             document.getElementById('editSnippetId').value = id; document.getElementById('snipTitle').value = title; document.getElementById('snipAuthor').value = author; document.getElementById('snipType').value = type; document.getElementById('snipCode').value = document.getElementById(codeId).innerText; document.getElementById('snippetModalTitle').innerText = "Revisi Snippet"; openModal('addSnippetModal');
         }
-
     </script>
 
     <!-- FIREBASE & DB -->
@@ -673,21 +1044,19 @@
         const imgbbApiKey = "3c1b551a0634329ac4b537b8b0db493c";
 
         let isAdmin = false;
+        // GANTI EMAIL INI DENGAN EMAIL GOOGLE KAMU!
         const ADMIN_EMAIL = "ryoga9753@gmail.com"; 
 
+        // --- AUTH ADMIN LOGIC ---
         auth.onAuthStateChanged(function(user) {
             if (user && user.email === ADMIN_EMAIL) {
                 isAdmin = true;
                 document.body.classList.add('admin-mode');
                 document.getElementById('adminArea').classList.remove('hidden');
-                document.getElementById('adminLoginBtn').classList.add('hidden');
-                document.getElementById('adminLogoutBtn').classList.remove('hidden');
             } else {
                 isAdmin = false;
                 document.body.classList.remove('admin-mode');
                 document.getElementById('adminArea').classList.add('hidden');
-                document.getElementById('adminLoginBtn').classList.remove('hidden');
-                document.getElementById('adminLogoutBtn').classList.add('hidden');
             }
         });
 
@@ -698,58 +1067,51 @@
                 else showToast("Berhasil Login Admin!", "success");
             }).catch(err => showToast("Gagal Login.", "error"));
         }
-        function logoutAdmin() { auth.signOut(); showToast("Logged out."); }
 
-        async function generateAdminWarranty() {
-            const code = 'INV-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-            const expiresAt = new Date(); expiresAt.setDate(expiresAt.getDate() + 5);
-            await db.collection("warranties").doc(code).set({ code: code, isValid: true, expiresAt: expiresAt, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-            document.getElementById('generatedCodeDisplay').classList.remove('hidden'); document.getElementById('newCodeValue').innerText = code;
+        // --- CHAT LISTENER ---
+        let chatUnsubscribe = null;
+        function initChat() {
+            if(chatUnsubscribe) return;
+            chatUnsubscribe = db.collection("public_chat").orderBy("timestamp", "asc").limitToLast(50).onSnapshot(snapshot => {
+                const box = document.getElementById('chatBox');
+                let isScrolledToBottom = box.scrollHeight - box.clientHeight <= box.scrollTop + 1;
+                
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === "added") {
+                        const d = change.doc.data();
+                        const isMe = d.name === chatNickname;
+                        const align = isMe ? 'self-end bg-emerald-500/20 border-emerald-500/30' : 'self-start bg-slate-800 border-white/10';
+                        const nameColor = isMe ? 'text-emerald-400' : 'text-cyan-400';
+                        
+                        const msgDiv = document.createElement('div');
+                        msgDiv.className = `max-w-[85%] rounded-xl p-3 border ${align} mb-3 shadow-md`;
+                        msgDiv.innerHTML = `<p class="text-[10px] ${nameColor} font-bold mb-1">${d.name}</p><p class="text-sm text-white break-words">${d.text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>`;
+                        box.appendChild(msgDiv);
+                    }
+                });
+                // Auto scroll to bottom
+                if(isScrolledToBottom || snapshot.docChanges().length > 0) box.scrollTop = box.scrollHeight;
+            });
         }
-        function copyGeneratedCode() { navigator.clipboard.writeText(document.getElementById('newCodeValue').innerText); showToast("Kode Disalin!"); }
 
+        // --- DELETE DATA (ADMIN ONLY) ---
         async function deleteData(collection, id) {
             if(!isAdmin) return;
             if(!confirm("Yakin ingin menghapus postingan ini secara permanen?")) return;
-            try {
-                await db.collection(collection).doc(id).delete();
-                showToast("Postingan Dihapus!", "success");
-                loadData();
-            } catch(e) { showToast("Gagal menghapus.", "error"); }
+            try { await db.collection(collection).doc(id).delete(); showToast("Dihapus!", "success"); loadData(); } 
+            catch(e) { showToast("Gagal menghapus.", "error"); }
         }
 
-        document.getElementById('claimWarrantyForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submitClaimBtn'); btn.disabled = true; btn.innerText = "Mengecek Kode...";
-            const code = document.getElementById('claimCode').value.toUpperCase(); const contact = document.getElementById('claimContact').value;
-            try {
-                const doc = await db.collection('warranties').doc(code).get();
-                if (!doc.exists) showToast("Kode Garansi TIDAK DITEMUKAN!", "error");
-                else {
-                    const data = doc.data(); const now = new Date(); const expiry = data.expiresAt.toDate();
-                    if (!data.isValid) showToast("Kode sudah pernah diklaim!", "error");
-                    else if (now > expiry) showToast("Masa Garansi (5 Hari) habis!", "error");
-                    else {
-                        btn.innerText = "Mengunggah Bukti...";
-                        const fd = new FormData(); fd.append("image", claimImage);
-                        const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, { method: "POST", body: fd });
-                        const imgData = await res.json();
-                        await db.collection("claims").add({ code: code, contact: contact, proofUrl: imgData.data.url, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-                        showToast("Klaim Diterima! Admin akan mengecek.", "success");
-                        document.getElementById('claimWarrantyForm').reset(); document.getElementById('claimPreviewContainer').innerHTML = '';
-                    }
-                }
-            } catch (err) { showToast("Terjadi kesalahan.", "error"); } finally { btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Permintaan Klaim`; btn.disabled = false; }
-        });
-
+        // --- DATA LOGIC ---
         async function uploadToImgbb(file) {
             const fd = new FormData(); fd.append("image", file);
             const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, { method: "POST", body: fd });
             const data = await res.json(); if (data.success) return data.data.url; throw new Error();
         }
 
-        let allScripts = []; let allSnippets = [];
+        let allScripts = []; let allSnippets = []; let allRepos = [];
 
+        // UPLOAD SCRIPT BIASA
         document.getElementById('addScriptForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const link = document.getElementById('scriptLink').value.toLowerCase();
@@ -760,11 +1122,48 @@
                 let coverUrl = ""; let previewUrls = [];
                 if (fileCover) coverUrl = await uploadToImgbb(fileCover);
                 if (filePreviews.length > 0) previewUrls = await Promise.all(filePreviews.map(f => uploadToImgbb(f)));
-                await db.collection("scripts").add({ title: document.getElementById('scriptName').value, author: document.getElementById('scriptAuthor').value, description: document.getElementById('scriptDesc').value, language: document.getElementById('scriptLang').value, type: document.getElementById('scriptType').value, downloadLink: document.getElementById('scriptLink').value, cover: coverUrl, previews: previewUrls, ratingSum: 0, reviewCount: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                // SCRIPT BIASA DISIMPAN DI KOLEKSI "scripts" DENGAN ARRAY images
+                await db.collection("scripts").add({ title: document.getElementById('scriptName').value, author: document.getElementById('scriptAuthor').value, description: document.getElementById('scriptDesc').value, language: document.getElementById('scriptLang').value, type: document.getElementById('scriptType').value, downloadLink: document.getElementById('scriptLink').value, cover: coverUrl, previews: previewUrls, ratingSum: 0, reviewCount: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp(), images: coverUrl ? [coverUrl] : [] });
                 showToast("Berhasil!"); document.getElementById('addScriptForm').reset(); document.getElementById('coverPreviewContainer').innerHTML=''; document.getElementById('screenshotsPreviewContainer').innerHTML=''; fileCover = null; filePreviews = []; closeModal('addScriptModal'); loadData();
             } catch (err) { showToast("Gagal menyimpan.", "error"); } finally { btn.innerHTML = orig; btn.disabled = false; }
         });
 
+        // UPLOAD REPO KHUSUS (BAILEYS DLL)
+        document.getElementById('addRepoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const link = document.getElementById('repoLink').value.toLowerCase();
+            if (!link.includes('github.com') && !link.includes('npmjs.com')) return showToast("Hanya link Github / NPM!", "error");
+            
+            const btn = document.getElementById('submitRepoBtn'); const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; btn.disabled = true;
+            try {
+                let coverUrl = ""; let previewUrls = [];
+                if (fileCover) coverUrl = await uploadToImgbb(fileCover);
+                if (filePreviews.length > 0) previewUrls = await Promise.all(filePreviews.map(f => uploadToImgbb(f)));
+                // REPO DISIMPAN DI KOLEKSI "scripts" JUGA AGAR MUDAH (Tipe di-set lewat dropdown repoType)
+                await db.collection("scripts").add({ 
+                    title: document.getElementById('repoName').value, 
+                    author: document.getElementById('repoAuthor').value, 
+                    description: "Repository/Library untuk bot WhatsApp/Lainnya", // Auto desc
+                    language: "Node.js", // Auto lang
+                    type: document.getElementById('repoType').value, 
+                    downloadLink: document.getElementById('repoLink').value, 
+                    cover: coverUrl, previews: previewUrls, 
+                    ratingSum: 0, reviewCount: 0, 
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(), 
+                    images: coverUrl ? [coverUrl] : [] 
+                });
+                showToast("Repo Berhasil Diupload!", "success"); 
+                document.getElementById('addRepoForm').reset(); 
+                document.getElementById('repoCoverPreview').innerHTML=''; 
+                document.getElementById('repoScreenshotsPreview').innerHTML=''; 
+                fileCover = null; filePreviews = []; 
+                closeModal('addRepoModal'); 
+                loadData();
+            } catch (err) { showToast("Gagal menyimpan.", "error"); } finally { btn.innerHTML = orig; btn.disabled = false; }
+        });
+
+        // UPLOAD SNIPPET
         document.getElementById('addSnippetForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitSnipBtn'); btn.disabled = true; btn.innerText = "Processing...";
@@ -773,13 +1172,10 @@
             
             try {
                 if(editId) {
-                    await db.collection("snippets").doc(editId).update(snipData);
-                    showToast("Snippet direvisi!");
+                    await db.collection("snippets").doc(editId).update(snipData); showToast("Snippet direvisi!");
                 } else {
-                    snipData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    snipData.ratingSum = 0; snipData.reviewCount = 0;
-                    await db.collection("snippets").add(snipData);
-                    showToast("Snippet tersimpan!");
+                    snipData.createdAt = firebase.firestore.FieldValue.serverTimestamp(); snipData.ratingSum = 0; snipData.reviewCount = 0;
+                    await db.collection("snippets").add(snipData); showToast("Snippet tersimpan!");
                 }
                 document.getElementById('addSnippetForm').reset(); document.getElementById('editSnippetId').value = ''; closeModal('addSnippetModal'); loadData();
             } catch(e) { showToast("Gagal", "error"); } finally { btn.disabled = false; btn.innerText = "Simpan Snippet"; }
@@ -787,29 +1183,47 @@
 
         async function loadData() {
             try {
-                const qsS = await db.collection("scripts").get();
-                allScripts = []; qsS.forEach(d => allScripts.push({ id: d.id, ...d.data() }));
+                const qsS = await db.collection("scripts").orderBy("createdAt", "desc").get();
+                allScripts = []; allRepos = [];
+                qsS.forEach(d => {
+                    const data = { id: d.id, ...d.data() };
+                    if(data.type === 'Baileys' || data.type === 'Repo Github') {
+                        allRepos.push(data);
+                    } else {
+                        allScripts.push(data);
+                    }
+                });
                 
-                const qsSnip = await db.collection("snippets").get();
+                const qsSnip = await db.collection("snippets").orderBy("createdAt", "desc").get();
                 allSnippets = []; qsSnip.forEach(d => allSnippets.push({ id: d.id, ...d.data() }));
                 
                 document.getElementById('loadingState').classList.add('hidden');
                 document.getElementById('loadingSnippetState').classList.add('hidden');
+                document.getElementById('loadingRepoState').classList.add('hidden');
                 
-                applyFilters(); applySnippetFilters();
+                applyFilters(); applySnippetFilters(); applyRepoFilters();
             } catch (error) { 
                 document.getElementById('loadingState').innerHTML = `<p class="text-rose-400">Gagal terhubung database.</p>`; 
                 document.getElementById('loadingSnippetState').innerHTML = `<p class="text-rose-400">Gagal terhubung database.</p>`; 
             }
         }
 
-        // --- RENDER SCRIPTS ---
-        function renderScripts(arr) {
-            const cont = document.getElementById('scriptsContainer'); const emp = document.getElementById('emptyState'); cont.innerHTML = '';
+        // --- RENDER SCRIPTS & REPO ---
+        function renderScriptsList(arr, containerId, emptyId) {
+            const cont = document.getElementById(containerId); const emp = document.getElementById(emptyId); cont.innerHTML = '';
             if (arr.length === 0) emp.classList.remove('hidden'); else {
                 emp.classList.add('hidden');
                 arr.forEach(data => {
-                    const imgSrc = data.cover || 'https://placehold.co/600x300/1e293b/10b981?text=No+Cover';
+                    // PENGAMBILAN GAMBAR BERBASIS ARRAY (FIX)
+                    let imgSrc = 'https://placehold.co/600x300/1e293b/10b981?text=No+Cover';
+                    if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+                        imgSrc = data.images[0];
+                    } else if (data.cover && data.cover.trim() !== '') {
+                        imgSrc = data.cover;
+                    } else if (data.imageUrl && data.imageUrl.trim() !== '') {
+                        imgSrc = data.imageUrl;
+                    }
+
                     const avgR = data.reviewCount > 0 ? (data.ratingSum / data.reviewCount).toFixed(1) : '0.0';
                     const pStr = (data.previews && data.previews.length > 0) ? data.previews.join(',') : '';
                     
@@ -817,7 +1231,7 @@
                         <div class="glass-card rounded-[24px] hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/15 transition-all duration-300 flex flex-col h-full group relative pb-4">
                             
                             <!-- ADMIN DELETE BUTTON -->
-                            <button onclick="deleteData('scripts', '${data.id}')" class="admin-only-btn absolute top-3 right-3 z-50 bg-rose-500 hover:bg-rose-400 text-white w-8 h-8 rounded-full shadow-lg flex items-center justify-center transition-colors"><i class="fa-solid fa-trash text-sm"></i></button>
+                            <button onclick="deleteData('scripts', '${data.id}')" class="admin-only-btn absolute top-3 right-3 z-50 bg-rose-500 hover:bg-rose-400 text-white w-8 h-8 rounded-full shadow-lg flex items-center justify-center transition-colors border border-white/20 backdrop-blur-md"><i class="fa-solid fa-trash text-sm"></i></button>
 
                             <!-- Gambar Header -->
                             <div class="relative w-full h-48 bg-slate-800 rounded-t-[24px] overflow-hidden shrink-0">
@@ -825,7 +1239,7 @@
                                 <img src="${imgSrc}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                                 
                                 <div class="absolute top-4 left-4 z-20 flex gap-2">
-                                    <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">${data.language}</span>
+                                    <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">${data.language || 'Node.js'}</span>
                                     <span class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">${data.type}</span>
                                 </div>
                             </div>
@@ -840,13 +1254,13 @@
                                     <span class="text-gray-400 text-[10px] whitespace-nowrap">(${data.reviewCount || 0} Ulasan)</span>
                                 </div>
 
-                                <h3 class="text-lg font-bold text-white mt-2 mb-1 line-clamp-2 uppercase tracking-wide leading-tight">${data.title}</h3>
+                                <h3 class="text-lg font-bold text-white mt-2 mb-1 line-clamp-2 tracking-wide leading-tight">${data.title}</h3>
                                 <p class="text-xs text-emerald-500 mb-4 font-medium"><i class="fa-solid fa-code-branch mr-1.5"></i>Author: <span class="text-gray-300">${data.author}</span></p>
                                 
                                 <p class="text-[13px] text-textMuted mb-6 line-clamp-2 flex-grow leading-relaxed">${data.description}</p>
                                 
                                 <div class="grid grid-cols-2 gap-3 mb-3 mt-auto">
-                                    <a href="${data.downloadLink}" target="_blank" class="flex justify-center items-center bg-emerald-500 hover:bg-emerald-400 text-[#0b1120] font-bold py-2.5 rounded-xl text-sm transition-colors"><i class="fa-solid fa-download mr-2"></i>Unduh</a>
+                                    <a href="${data.downloadLink}" target="_blank" class="flex justify-center items-center bg-emerald-500 hover:bg-emerald-400 text-[#0b1120] font-bold py-2.5 rounded-xl text-sm transition-colors"><i class="fa-brands fa-github mr-2"></i>Link</a>
                                     <button onclick="openReviewModal('${data.id}', 'scripts')" class="flex justify-center items-center bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl text-sm transition-colors border border-white/5"><i class="fa-regular fa-star mr-2"></i>Ulas</button>
                                 </div>
                                 <button onclick="showGallery('${pStr}')" class="w-full flex justify-center items-center bg-transparent border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 font-bold py-2.5 rounded-xl text-sm transition-colors"><i class="fa-regular fa-image mr-2"></i>Preview</button>
@@ -921,7 +1335,13 @@
             else if(sort === 'highest_rating') f.sort((a,b) => ((b.ratingSum/b.reviewCount)||0) - ((a.ratingSum/a.reviewCount)||0));
             else if(sort === 'lowest_rating') f.sort((a,b) => ((a.ratingSum/a.reviewCount)||0) - ((b.ratingSum/b.reviewCount)||0));
 
-            renderScripts(f);
+            renderScriptsList(f, 'scriptsContainer', 'emptyState');
+        }
+
+        function applyRepoFilters() {
+            const q = document.getElementById('repoSearchInput')?.value.toLowerCase() || '';
+            let f = allRepos.filter(s => (s.title.toLowerCase().includes(q) || s.author.toLowerCase().includes(q)));
+            renderScriptsList(f, 'repoContainer', 'emptyRepoState');
         }
 
         function applySnippetFilters() {
@@ -973,7 +1393,10 @@
             } catch(e) {} finally { btn.disabled=false; btn.innerText="Kirim Ulasan"; }
         });
 
-        window.onload = loadData;
+        window.onload = () => {
+            loadData();
+            initChat();
+        };
     </script>
 </body>
 </html>
